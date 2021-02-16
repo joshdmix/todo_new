@@ -1,0 +1,67 @@
+<h1>Show Task</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal @socket, TodoWeb.TaskLive.FormComponent,
+    id: @task.id,
+    title: @page_title,
+    action: @live_action,
+    task: @task,
+    return_to: Routes.task_show_path(@socket, :show, @task) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Title:</strong>
+    <%= @task.title %>
+  </li>
+
+  <li>
+    <strong>Description:</strong>
+    <%= @task.description %>
+  </li>
+
+  <li>
+    <strong>Start date:</strong>
+    <%= @task.start_date %>
+  </li>
+
+  <li>
+    <strong>Due date:</strong>
+    <%= @task.due_date %>
+  </li>
+
+  <li>
+    <strong>Priority:</strong>
+    <%= @task.priority %>
+  </li>
+
+  <li>
+    <strong>Labels:</strong>
+    <%= @task.labels %>
+  </li>
+
+  <li>
+    <strong>Completed:</strong>
+    <%= @task.completed %>
+  </li>
+
+  <li>
+    <strong>Completed date:</strong>
+    <%= @task.completed_date %>
+  </li>
+
+  <li>
+    <strong>Interval type:</strong>
+    <%= @task.interval_type %>
+  </li>
+
+  <li>
+    <strong>Interval quantity:</strong>
+    <%= @task.interval_quantity %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.task_show_path(@socket, :edit, @task), class: "button" %></span>
+<span><%= live_redirect "Back", to: Routes.task_index_path(@socket, :index) %></span>

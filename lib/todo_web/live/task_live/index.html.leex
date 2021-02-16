@@ -1,0 +1,53 @@
+<h1>Listing Tasks</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal @socket, TodoWeb.TaskLive.FormComponent,
+    id: @task.id || :new,
+    title: @page_title,
+    action: @live_action,
+    task: @task,
+    return_to: Routes.task_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Start date</th>
+      <th>Due date</th>
+      <th>Priority</th>
+      <th>Labels</th>
+      <th>Completed</th>
+      <th>Completed date</th>
+      <th>Interval type</th>
+      <th>Interval quantity</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="tasks">
+    <%= for task <- @tasks do %>
+      <tr id="task-<%= task.id %>">
+        <td><%= task.title %></td>
+        <td><%= task.description %></td>
+        <td><%= task.start_date %></td>
+        <td><%= task.due_date %></td>
+        <td><%= task.priority %></td>
+        <td><%= task.labels %></td>
+        <td><%= task.completed %></td>
+        <td><%= task.completed_date %></td>
+        <td><%= task.interval_type %></td>
+        <td><%= task.interval_quantity %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.task_show_path(@socket, :show, task) %></span>
+          <span><%= live_patch "Edit", to: Routes.task_index_path(@socket, :edit, task) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: task.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Task", to: Routes.task_index_path(@socket, :new) %></span>

@@ -62,5 +62,12 @@ defmodule Todo.TasksTest do
 
       task
     end
+
+    test "sort by priority" do
+      a = task_fixture(@valid_attrs)
+      b = task_fixture(@update_attrs)
+      list = Repo.all(Task)
+      IO.inspect(list, label: "list")
+    end
   end
 end

@@ -112,4 +112,12 @@ defmodule Todo.Tasks do
     values = [{direction, field}]
     Repo.all(from t in Task, order_by: ^values)
   end
+
+  def get_tasks_by_label(label) do
+    Repo.all(from t in Task, where: t.label == ^label)
+  end
+
+  def get_tasks_by_priority(priority) do
+    Repo.all(from t in Task, where: t.priority == ^priority)
+  end
 end

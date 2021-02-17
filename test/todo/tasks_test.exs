@@ -1,7 +1,7 @@
 defmodule Todo.TasksTest do
-  use Todo.DataCase
-
   alias Todo.Tasks
+  use ExUnit.Case
+  use Todo.RepoCase
 
   describe "tasks" do
     alias Todo.Tasks.Task
@@ -15,29 +15,29 @@ defmodule Todo.TasksTest do
       inserted_at: ~N[2021-02-16 21:05:32],
       interval_quantity: 9,
       interval_type: "days",
+      label: nil,
       label_id: nil,
       priority: 42,
       start_date: ~U[2021-02-18 21:05:32Z],
       title: "42_title",
       updated_at: ~N[2021-02-16 21:05:32]
     }
-
     @update_attrs %{
       completed: false,
-      completed_date: ~U[2021-03-18 21:05:32Z],
-      description: "Suspendisse luctus ligula\nvel mi accumsan convallis.\n",
-      due_date: ~U[2021-03-11 21:05:32Z],
-      id: 42,
+      completed_date: ~U[2021-04-18 21:05:32Z],
+      description: "Xander luctus ligula\nvel mi accumsan convallis.\n",
+      due_date: ~U[2021-04-11 21:05:32Z],
+      id: 44,
       inserted_at: ~N[2021-02-16 21:05:32],
       interval_quantity: 9,
       interval_type: "days",
+      label: nil,
       label_id: nil,
-      priority: 42,
-      start_date: ~U[2021-02-18 21:05:32Z],
-      title: "42_title",
+      priority: 44,
+      start_date: ~U[2021-03-18 21:05:32Z],
+      title: "44_title",
       updated_at: ~N[2021-02-16 21:05:32]
     }
-
     @invalid_attrs %{
       completed: nil,
       completed_date: nil,
@@ -47,6 +47,7 @@ defmodule Todo.TasksTest do
       inserted_at: nil,
       interval_quantity: nil,
       interval_type: nil,
+      label: nil,
       label_id: nil,
       priority: nil,
       start_date: nil,
@@ -55,17 +56,14 @@ defmodule Todo.TasksTest do
     }
 
     def task_fixture(attrs \\ %{}) do
-      {:ok, task} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Tasks.create_task!()
-
+      IO.puts("enter task_fixture")
+      {:ok, task} = attrs |> Enum.into(@valid_attrs) |> Tasks.create_task!()
       task
     end
 
-
-    test "sort by priority" do
-      a = task_fixture()
+    test "list_tasks/0 returns all tasks" do
+      task = task_fixture()
+      assert Tasks.list_tasks() == [task]
     end
   end
 end

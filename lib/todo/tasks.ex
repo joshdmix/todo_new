@@ -121,7 +121,17 @@ defmodule Todo.Tasks do
     Repo.all(from t in Task, where: t.priority == ^priority)
   end
 
-  def shift_task(date, interval, repeat_qty, unit \\ :weeks) do
+  # def create_tasks_on_interval(task, interval, repeat_qty, unit \\ :weeks) do
+  #   shifted_dates
+
+
+  # end
+
+  # def shift_dates(start_date, due_date, interval, repeat_qty) do
+  #   start_dates
+  # end
+
+  def get_shift_list(date, interval, repeat_qty, unit) do
     repeat_list = 1..repeat_qty |> Enum.to_list()
     build_shift_list(repeat_list, [], date, interval, unit)
   end

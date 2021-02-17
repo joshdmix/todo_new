@@ -10,6 +10,7 @@ defmodule TodoWeb.TaskLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
+     |> Map.put(:labels, Tasks.list_alphabetical_labels())
      |> assign(:changeset, changeset)}
   end
 
@@ -51,5 +52,9 @@ defmodule TodoWeb.TaskLive.FormComponent do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
     end
+  end
+
+  def label_select_options(labels) do
+    for label <- labels, do: {label.name, label.id}
   end
 end

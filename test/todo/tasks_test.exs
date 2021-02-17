@@ -14,7 +14,7 @@ defmodule Todo.TasksTest do
       {:ok, task} =
         attrs
         |> Enum.into(@valid_attrs)
-        |> Tasks.create_task()
+        |> Tasks.create_task!()
 
       task
     end
@@ -24,13 +24,18 @@ defmodule Todo.TasksTest do
       assert Tasks.list_tasks() == [task]
     end
 
+    test "sort_task_by_start_date" do
+      task_list = Enum.each([0, 1, 2], &task_fixture(%{start_date: Timex.now() |> Timex.shift(:day, &1)}))
+    end
+
     test "get_task!/1 returns the task with given id" do
       task = task_fixture()
+      IO.inspect(task, label: "HSHSHDHHFSDF")
       assert Tasks.get_task!(task.id) == task
     end
 
-    test "create_task/1 with valid data creates a task" do
-      assert {:ok, %Task{} = task} = Tasks.create_task(@valid_attrs)
+    test "create_task!/1 with valid data creates a task" do
+      assert {:ok, %Task{} = task} = Tasks.create_task!(@valid_attrs)
       assert task.completed == true
       assert task.completed_date == DateTime.from_naive!(~N[2010-04-17T14:00:00Z], "Etc/UTC")
       assert task.description == "some description"
@@ -43,8 +48,8 @@ defmodule Todo.TasksTest do
       assert task.title == "some title"
     end
 
-    test "create_task/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Tasks.create_task(@invalid_attrs)
+    test "create_task!/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Tasks.create_task!(@invalid_attrs)
     end
 
     test "update_task/2 with valid data updates the task" do
@@ -78,5 +83,6 @@ defmodule Todo.TasksTest do
       task = task_fixture()
       assert %Ecto.Changeset{} = Tasks.change_task(task)
     end
+
   end
 end

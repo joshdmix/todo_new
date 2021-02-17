@@ -7,7 +7,8 @@ defmodule Todo.Tasks do
   alias Todo.Repo
 
   alias Todo.Tasks.Task
-  alias Todo.Tasks.Labels
+  alias Todo.Tasks.Label
+  alias Todo.Labels
 
   @doc """
   Returns the list of tasks.
@@ -104,6 +105,11 @@ defmodule Todo.Tasks do
   end
 
   def list_alphabetical_labels do
-    Label |> Labels.alphabetical |> Repo.all()
+    Label |> Labels.alphabetical() |> Repo.all()
+  end
+
+  def sort_tasks(direction, field) do
+    values = [{direction, field}]
+    Repo.all(from t in Task, order_by: ^values)
   end
 end

@@ -27,7 +27,7 @@
   <%= error_tag f, :priority %>
 
   <%= label f, :labels %>
-  <%= multiple_select f, :labels, ["Option 1": "option1", "Option 2": "option2"] %>
+  <%= multiple_select f, :labels, @labels %>
   <%= error_tag f, :labels %>
 
   <%= label f, :completed %>

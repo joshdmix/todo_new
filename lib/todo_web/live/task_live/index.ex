@@ -6,7 +6,15 @@ defmodule TodoWeb.TaskLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :tasks, list_tasks())}
+    socket =
+      assign(socket,
+        tasks: Tasks.sort_tasks(),
+        labels: Tasks.list_alphabetical_labels(),
+        selected_labels: nil,
+        sorted_tasks: nil
+      )
+
+    {:ok, socket}
   end
 
   @impl true
@@ -40,7 +48,77 @@ defmodule TodoWeb.TaskLive.Index do
     {:noreply, assign(socket, :tasks, list_tasks())}
   end
 
+  @impl true
+  def handle_event("sort", %{"sort_val" => value}, socket) do
+    value =
+      case value do
+        "Title" -> :title
+        "Description" -> :description
+        "Start" -> :start_date
+        "Due" -> :due_date
+        "Priority" -> :priority
+        "Labels" -> :labels
+      end
+
+    {:noreply, assign(socket, :tasks, Tasks.sort_tasks(:asc, value))}
+  end
+
+  @impl true
+  def handle_event("sort-desc", %{"sort_val" => value}, socket) do
+    value =
+      case value do
+        "Title" -> :title
+        "Description" -> :description
+        "Start" -> :start_date
+        "Due" -> :due_date
+        "Priority" -> :priority
+        "Labels" -> :labels
+      end
+
+    {:noreply, assign(socket, :tasks, Tasks.sort_tasks(:desc, value))}
+  end
+
+  @impl true
+  def handle_event("select-label", %{"label_val" => value}, socket) do
+    IO.inspect(value, label: "select-label")
+
+    selected_labels =
+      case socket.assigns.selected_labels do
+        nil -> [value]
+        _ -> [value | socket.assigns.selected_labels]
+      end
+
+    IO.inspect(selected_labels, label: "Selected Labels List")
+    socket =
+      assign(socket, tasks: Tasks.get_tasks_by_labels(selected_labels), selected_labels: selected_labels)
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("reset-labels", %{}, socket) do
+    socket = assign(socket, tasks: Tasks.list_tasks(), selected_labels: nil)
+
+    {:noreply, socket}
+  end
+
+  def get_priority(int) do
+    case int do
+      4 -> "High"
+      3 -> "Medium"
+      2 -> "Low"
+      1 -> "Nil"
+    end
+  end
+
   defp list_tasks do
     Tasks.list_tasks()
   end
+
+  # defp get_active_labels(labels, selected_labels) do
+  #   case selected_labels do
+  #     nil -> Tasks.list_alphabetical_labels
+  #     _ -> selected_labels
+  #   end
+  # end
 end

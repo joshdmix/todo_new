@@ -13,7 +13,10 @@ alias Todo.{Labels, Tasks}
 
 defmodule SeedRand do
   @today Timex.now()
-  def get_label(list), do: Enum.at(list, :rand.uniform(4) - 1)
+  def get_label() do
+    list = ~w[Work Home Urgent Medical Leisure Read Hobby]
+    Enum.at(list, Enum.random(0..5))
+  end
 
   def get_start_date(),
     do: @today |> DateTime.truncate(:second) |> Timex.shift(days: :rand.uniform(20))
@@ -26,9 +29,6 @@ defmodule SeedRand do
       |> Timex.shift(days: :rand.uniform(10))
 end
 
-# label_list = ~w[Work Home Urgent Medical Leisure Read Hobby]
-label_list = [1, 2, 3, 4, 5, 6]
-
 Enum.each(1..100 |> Enum.to_list(), fn x ->
   Tasks.create_task!(%{
     completed: false,
@@ -38,8 +38,8 @@ Enum.each(1..100 |> Enum.to_list(), fn x ->
     """,
     due_date: SeedRand.get_due_date(),
     start_date: SeedRand.get_start_date(),
-    priority: x,
-    label_id: label_list[:rand.uniform(6)],
+    priority: Enum.random(1..4),
+    labels: [SeedRand.get_label()],
     title: "#{x}_title",
     interval_type: "days",
     interval_quantity: :rand.uniform(10),

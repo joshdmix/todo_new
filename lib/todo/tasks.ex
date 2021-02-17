@@ -105,25 +105,40 @@ defmodule Todo.Tasks do
   end
 
   def list_alphabetical_labels do
-    Label |> Labels.alphabetical() |> Repo.all()
+    Label |> Labels.alphabetical() |> Repo.all() |> Enum.map(& &1.name)
   end
 
   def sort_tasks(direction \\ :asc, field \\ :start_date) do
     values = [{direction, field}]
-    Repo.all(from t in Task, order_by: ^values)
+    Repo.all(from t in Task, order_by: ^values) |> format_tasks()
   end
 
   def get_tasks_by_label(label) do
-    Repo.all(from t in Task, where: t.label == ^label)
+    Repo.all(from t in Task, where: ^label in t.labels) |> format_tasks()
+  end
+
+  def get_tasks_by_labels(labels) do
+    query = &Repo.all(from(t in Task, where: ^&1 in t.labels))
+    labels |> Enum.map(query) |> List.flatten() |> Enum.uniq() |> format_tasks()
   end
 
   def get_tasks_by_priority(priority) do
     Repo.all(from t in Task, where: t.priority == ^priority)
   end
 
+  defp format_tasks(tasks) do
+    Enum.map(tasks, &format_dates(&1))
+  end
+
+  defp format_dates(task) do
+    format_string = "%A %d %B %Y %k:%M %z"
+    start_date = task.start_date |> Timex.format!(format_string, :strftime)
+    due_date = task.due_date |> Timex.format!(format_string, :strftime)
+     %{task | start_date: start_date, due_date: due_date}
+  end
+
   # def create_tasks_on_interval(task, interval, repeat_qty, unit \\ :weeks) do
   #   shifted_dates
-
 
   # end
 

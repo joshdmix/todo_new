@@ -9,7 +9,6 @@ defmodule Todo.Tasks.Task do
     field :due_date, :utc_datetime
     field :interval_quantity, :integer
     field :interval_type, :string
-    field :labels, {:array, :string}
     field :priority, :integer
     field :start_date, :utc_datetime
     field :title, :string
@@ -22,7 +21,7 @@ defmodule Todo.Tasks.Task do
   @doc false
   def changeset(task, attrs) do
     task
-    |> cast(attrs, [:title, :description, :start_date, :due_date, :priority, :labels, :completed, :completed_date, :interval_type, :interval_quantity, :label_id])
+    |> cast(attrs, [:title, :description, :start_date, :due_date, :priority, :completed, :completed_date, :interval_type, :interval_quantity, :label_id])
     |> validate_required([:title, :description, :start_date, :due_date, :priority, :completed])
   end
 end

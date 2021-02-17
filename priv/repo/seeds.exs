@@ -26,7 +26,8 @@ defmodule SeedRand do
       |> Timex.shift(days: :rand.uniform(10))
 end
 
-label_list = ~w[Work Home Urgent Medical Leisure Read Hobby]
+# label_list = ~w[Work Home Urgent Medical Leisure Read Hobby]
+label_list = [1, 2, 3, 4, 5, 6]
 
 Enum.each(1..100 |> Enum.to_list(), fn x ->
   Tasks.create_task!(%{
@@ -38,6 +39,7 @@ Enum.each(1..100 |> Enum.to_list(), fn x ->
     due_date: SeedRand.get_due_date(),
     start_date: SeedRand.get_start_date(),
     priority: x,
+    label_id: label_list[:rand.uniform(6)],
     title: "#{x}_title",
     interval_type: "days",
     interval_quantity: :rand.uniform(10),
@@ -46,5 +48,5 @@ Enum.each(1..100 |> Enum.to_list(), fn x ->
 end)
 
 for label <- ~w(Work Home Urgent Medical Leisure Read Hobby) do
-    Labels.create_label!(label)
+  Labels.create_label!(label)
 end

@@ -113,6 +113,7 @@ defmodule Todo.Tasks do
     Repo.all(from t in Task, order_by: ^values)
   end
 
+
   def get_tasks_by_label(label) do
     Repo.all(from t in Task, where: t.label == ^label)
   end

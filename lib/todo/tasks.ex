@@ -117,10 +117,15 @@ defmodule Todo.Tasks do
     Repo.all(from t in Task, where: ^label in t.labels) |> format_tasks()
   end
 
+  def get_tasks_by_labels([]) do
+    list_tasks() |> format_tasks()
+  end
+
   def get_tasks_by_labels(labels) do
     query = &Repo.all(from(t in Task, where: ^&1 in t.labels))
     labels |> Enum.map(query) |> List.flatten() |> Enum.uniq() |> format_tasks()
   end
+
 
   def get_tasks_by_priority(priority) do
     Repo.all(from t in Task, where: t.priority == ^priority)

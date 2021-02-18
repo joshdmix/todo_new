@@ -1,6 +1,6 @@
-<h1>Listing Tasks</h1>
+<h1 class="text-base">Listing Tasks</h1>
 
-<h3>Task Count <%= length(@tasks) %></h3>
+<h3 class="text-base">Task Count <%= length(@tasks) %></h3>
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, TodoWeb.TaskLive.FormComponent,
@@ -11,14 +11,19 @@
     return_to: Routes.task_index_path(@socket, :index) %>
 <% end %>
 
-<div>
+<div class="flex justify-between text-base">
   <%= for label <- @labels do %>
-      <button phx-click="select-label" phx-value-label_val=<%= label%>><%= label %></button>
+      <%= if @selected_labels == nil || label not in @selected_labels do %>
+      <button class="w-1/12 hover:shadow-lg hover:bg-blue-700 border-transparent bg-gray-200" phx-click="select-label" phx-value-label_val=<%= label%>><%= label %></button>
+      <% else %>
+      <button class="w-1/12 hover:shadow-lg hover:bg-blue-300 border-transparent bg-gray-500 text-white" phx-click="deselect-label" phx-value-label_val=<%= label%>><%= label %></button>
+
       <% end %>
-      <button phx-click="reset-labels" %>Reset</button>
-<div>
-<table >
-  <thead>
+      <% end %>
+      <button class="w-1/12 hover:bg-blue-300 hover:shadow-lg"  phx-click="reset-labels" %>Reset</button>
+</div>
+<table class="min-w-full divide-y divide-gray-200">
+  <thead class="bg-gray-50">
     <tr>
       <%= for header <- ~w[
       Title
@@ -26,25 +31,29 @@
       Start
       Due
       Priority
-      Labels
-                       ] do %>
-          <th><%= header %><button phx-click="sort" phx-value-sort_val=<%= header %>>Asc</button>
-<button phx-click="sort-desc" phx-value-sort_val=<%= header %>>Desc</button>
-          </th>
+                        Labels
+                        Completed] do %>
+          <th class="text-left text-base text-gray-500 uppercase w-1/6">
+            <div class="flex-none">
+            <button class="h-5 border-transparent hover:bg-blue-500" phx-click="sort" phx-value-sort_val=<%= header %>>▲</button>
+            <%= header %>
+            <button class="h-5 border-transparent hover:bg-blue-500"  phx-click="sort-desc" phx-value-sort_val=<%= header %>>▼</button>
+            </div>
+            </th>
           <% end %>
-
-      <th></th>
     </tr>
   </thead>
-  <tbody id="tasks">
+  <tbody class="text-base bg-white divide-y divide-gray-200" id="tasks"
     <%= for task <- @tasks do %>
-      <tr id="task-<%= task.id %>">
-        <td><%= task.title %></td>
-        <td><%= task.description %></td>
-        <td><%= task.start_date %></td>
-        <td><%= task.due_date %></td>
-        <td><%= get_priority(task.priority)  %></td>
-        <td><%= task.labels %></td>
+      <tr id="task-<%= task.id %>" >
+        <td class="px-6 py-4 uppercase text-s"><%= task.title %></td>
+        <td class="px-6 py-4"><%= task.description %></td>
+        <td class="px-6 py-4"><%= task.start_date %></td>
+        <td class="px-6 py-4"><%= task.due_date %></td>
+        <td class="px-6 py-4"><%= get_priority(task.priority)  %></td>
+        <td class="px-6 py-4"><%= task.labels %></td>
+        <td class="px-6 py-4"><%= checkbox(:task, :completed, phx_click: "toggle_completed", phx_value_id: task.id,  value: task.completed)%></td>
+
 
         <td>
           <span><%= live_redirect "Show", to: Routes.task_show_path(@socket, :show, task) %></span>

@@ -58,6 +58,7 @@ defmodule TodoWeb.TaskLive.Index do
         "Due" -> :due_date
         "Priority" -> :priority
         "Labels" -> :labels
+        "Completed" -> :completed
       end
 
     {:noreply, assign(socket, :tasks, Tasks.sort_tasks(:asc, value))}
@@ -73,6 +74,7 @@ defmodule TodoWeb.TaskLive.Index do
         "Due" -> :due_date
         "Priority" -> :priority
         "Labels" -> :labels
+        "Completed" -> :completed
       end
 
     {:noreply, assign(socket, :tasks, Tasks.sort_tasks(:desc, value))}
@@ -89,18 +91,56 @@ defmodule TodoWeb.TaskLive.Index do
       end
 
     IO.inspect(selected_labels, label: "Selected Labels List")
+
     socket =
-      assign(socket, tasks: Tasks.get_tasks_by_labels(selected_labels), selected_labels: selected_labels)
+      assign(socket,
+        tasks: Tasks.get_tasks_by_labels(selected_labels),
+        selected_labels: selected_labels
+      )
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event(
+        "deselect-label",
+        %{"label_val" => value},
+        socket = %{assigns: %{selected_labels: selected_labels}}
+      ) do
+    selected_labels = selected_labels |> List.delete(value)
+
+    socket =
+      assign(socket,
+        tasks: Tasks.get_tasks_by_labels(selected_labels),
+        selected_labels: selected_labels
+      )
 
     {:noreply, socket}
   end
 
   @impl true
   def handle_event("reset-labels", %{}, socket) do
-    socket = assign(socket, tasks: Tasks.list_tasks(), selected_labels: nil)
+    socket = assign(socket, tasks: Tasks.sort_tasks(), selected_labels: nil)
 
     {:noreply, socket}
   end
+
+  @impl true
+  def handle_event("toggle_completed", %{"id" => id}, socket) do
+    IO.inspect(id, label: "ID TOGGLE COMPLETED")
+    task = Tasks.get_task!(id)
+    Tasks.update_task(task, %{completed: !task.completed})
+
+
+    {:noreply, socket}
+  end
+
+  # @impl true
+  # def handle_event("show", %{"task" => task}, socket) do
+  #   IO.inspect(task, label: "TASK")
+  #   {:noreply, live_redirect(socket, to: Routes.task_show_path(socket, :show, task))}
+  # end
+
 
   def get_priority(int) do
     case int do
@@ -111,9 +151,12 @@ defmodule TodoWeb.TaskLive.Index do
     end
   end
 
+
   defp list_tasks do
     Tasks.list_tasks()
   end
+
+
 
   # defp get_active_labels(labels, selected_labels) do
   #   case selected_labels do

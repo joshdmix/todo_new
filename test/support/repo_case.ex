@@ -8,8 +8,6 @@ defmodule Todo.RepoCase do
       import Ecto
       import Ecto.Query
       import Todo.RepoCase
-
-
     end
   end
 

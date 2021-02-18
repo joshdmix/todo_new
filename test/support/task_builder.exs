@@ -12,21 +12,24 @@ defmodule TaskBuilder do
 
   def task do
     task = %Task{}
+
     task[
-      completed: false,
-      completed_date: ~U[2021-03-18 21:05:32Z],
-      description: "Suspendisse luctus ligula\nvel mi accumsan convallis.\n",
-      due_date: ~U[2021-03-11 21:05:32Z],
-      id: 42,
-      inserted_at: ~N[2021-02-16 21:05:32],
-      interval_quantity: 9,
-      interval_type: "days",
-      label: nil,
-      label_id: nil,
-      priority: 42,
-      start_date: ~U[2021-02-18 21:05:32Z],
-      title: "42_title",
-      updated_at: ~N[2021-02-16 21:05:32]
+      [
+        completed: false,
+        completed_date: ~U[2021-03-18 21:05:32Z],
+        description: "Suspendisse luctus ligula\nvel mi accumsan convallis.\n",
+        due_date: ~U[2021-03-11 21:05:32Z],
+        id: 42,
+        inserted_at: ~N[2021-02-16 21:05:32],
+        interval_quantity: 9,
+        interval_type: "days",
+        label: nil,
+        label_id: nil,
+        priority: 42,
+        start_date: ~U[2021-02-18 21:05:32Z],
+        title: "42_title",
+        updated_at: ~N[2021-02-16 21:05:32]
+      ]
     ]
   end
 
@@ -34,20 +37,22 @@ defmodule TaskBuilder do
     task = %Todo.Tasks.Task{}
 
     task[
-      completed: false,
-      completed_date: ~U[2021-04-18 21:05:32Z],
-      description: "Xander luctus ligula\nvel mi accumsan convallis.\n",
-      due_date: ~U[2021-04-11 21:05:32Z],
-      id: 44,
-      inserted_at: ~N[2021-02-16 21:05:32],
-      interval_quantity: 9,
-      interval_type: "days",
-      label: nil,
-      label_id: nil,
-      priority: 44,
-      start_date: ~U[2021-03-18 21:05:32Z],
-      title: "44_title",
-      updated_at: ~N[2021-02-16 21:05:32]
+      [
+        completed: false,
+        completed_date: ~U[2021-04-18 21:05:32Z],
+        description: "Xander luctus ligula\nvel mi accumsan convallis.\n",
+        due_date: ~U[2021-04-11 21:05:32Z],
+        id: 44,
+        inserted_at: ~N[2021-02-16 21:05:32],
+        interval_quantity: 9,
+        interval_type: "days",
+        label: nil,
+        label_id: nil,
+        priority: 44,
+        start_date: ~U[2021-03-18 21:05:32Z],
+        title: "44_title",
+        updated_at: ~N[2021-02-16 21:05:32]
+      ]
     ]
   end
 

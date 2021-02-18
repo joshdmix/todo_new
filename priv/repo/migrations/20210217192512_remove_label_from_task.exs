@@ -5,6 +5,5 @@ defmodule Todo.Repo.Migrations.RemoveLabelFromTask do
     alter table(:tasks) do
       remove :label_id, references(:labels)
     end
-
   end
 end

@@ -5,7 +5,6 @@ defmodule Todo.Tasks.Label do
   schema "labels" do
     field :name, :string
 
-
     timestamps()
   end
 

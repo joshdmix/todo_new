@@ -104,6 +104,14 @@ defmodule Todo.Tasks do
     Task.changeset(task, attrs)
   end
 
+  def get_completed_tasks() do
+    Repo.all(from t in Task, where: t.completed == true)
+  end
+
+  def get_uncompleted_tasks() do
+    Repo.all(from t in Task, where: t.completed != true)
+  end
+
   def list_alphabetical_labels do
     Label |> Labels.alphabetical() |> Repo.all() |> Enum.map(& &1.name)
   end
@@ -126,9 +134,8 @@ defmodule Todo.Tasks do
     labels |> Enum.map(query) |> List.flatten() |> Enum.uniq() |> format_tasks()
   end
 
-
   def get_tasks_by_priority(priority) do
-    Repo.all(from t in Task, where: t.priority == ^priority)
+    Repo.all(from t in Task, where: t.priority == ^priority) |> format_tasks()
   end
 
   defp format_tasks(tasks) do
@@ -139,7 +146,7 @@ defmodule Todo.Tasks do
     format_string = "%A %d %B %Y %k:%M %z"
     start_date = task.start_date |> Timex.format!(format_string, :strftime)
     due_date = task.due_date |> Timex.format!(format_string, :strftime)
-     %{task | start_date: start_date, due_date: due_date}
+    %{task | start_date: start_date, due_date: due_date}
   end
 
   # def create_tasks_on_interval(task, interval, repeat_qty, unit \\ :weeks) do

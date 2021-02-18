@@ -11,6 +11,15 @@
     return_to: Routes.task_index_path(@socket, :index) %>
 <% end %>
 
+<select id="priority" name="priority" phx-change="select-priority">
+    <option value="">Filter By Priority Level</option>
+    <option value=4>High</option>
+    <option value=3>Medium</option>
+    <option value=2>Low</option>
+    <option value=1>Nil</option>
+</select>
+<button class="text-sm w-1/12 hover:shadow-lg hover:bg-blue-700 border-transparent bg-gray-200" phx-click="get-completed">Completed Only</button>
+<button class="text-sm w-1/12 hover:shadow-lg hover:bg-blue-700 border-transparent bg-gray-200" phx-click="get-uncompleted">Open Tasks Only</button>
 <div class="flex justify-between text-base">
   <%= for label <- @labels do %>
       <%= if @selected_labels == nil || label not in @selected_labels do %>
@@ -31,16 +40,16 @@
       Start
       Due
       Priority
-                        Labels
-                        Completed] do %>
-          <th class="text-left text-base text-gray-500 uppercase w-1/6">
-            <div class="flex-none">
-            <button class="h-5 border-transparent hover:bg-blue-500" phx-click="sort" phx-value-sort_val=<%= header %>>▲</button>
-            <%= header %>
-            <button class="h-5 border-transparent hover:bg-blue-500"  phx-click="sort-desc" phx-value-sort_val=<%= header %>>▼</button>
-            </div>
-            </th>
-          <% end %>
+      Labels
+      Completed] do %>
+        <th class="text-left text-base text-gray-500 uppercase w-1/6">
+          <div class="flex-none">
+          <button class="h-5 border-transparent hover:bg-blue-500" phx-click="sort" phx-value-sort_val=<%= header %>>▲</button>
+          <%= header %>
+          <button class="h-5 border-transparent hover:bg-blue-500"  phx-click="sort-desc" phx-value-sort_val=<%= header %>>▼</button>
+          </div>
+          </th>
+        <% end %>
     </tr>
   </thead>
   <tbody class="text-base bg-white divide-y divide-gray-200" id="tasks"
@@ -53,8 +62,6 @@
         <td class="px-6 py-4"><%= get_priority(task.priority)  %></td>
         <td class="px-6 py-4"><%= task.labels %></td>
         <td class="px-6 py-4"><%= checkbox(:task, :completed, phx_click: "toggle_completed", phx_value_id: task.id,  value: task.completed)%></td>
-
-
         <td>
           <span><%= live_redirect "Show", to: Routes.task_show_path(@socket, :show, task) %></span>
           <span><%= live_patch "Edit", to: Routes.task_index_path(@socket, :edit, task) %></span>

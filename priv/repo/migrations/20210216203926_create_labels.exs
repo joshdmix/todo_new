@@ -9,6 +9,5 @@ defmodule Todo.Repo.Migrations.CreateLabels do
     end
 
     create unique_index(:labels, [:name])
-
   end
 end

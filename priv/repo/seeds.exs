@@ -15,7 +15,12 @@ defmodule SeedRand do
   @today Timex.now()
   def get_label() do
     list = ~w[Work Home Urgent Medical Leisure Read Hobby]
-    Enum.at(list, Enum.random(0..5))
+    Enum.at(list, Enum.random(0..6))
+  end
+
+  def get_priority() do
+    list = ~w[High Medium Low]
+    Enum.at(list, Enum.random(0..2))
   end
 
   def get_start_date(),
@@ -38,9 +43,9 @@ Enum.each(1..100 |> Enum.to_list(), fn x ->
     """,
     due_date: SeedRand.get_due_date(),
     start_date: SeedRand.get_start_date(),
-    priority: Enum.random(1..4),
+    priority: SeedRand.get_priority(),
     labels: [SeedRand.get_label()],
-    title: "#{x}_title",
+    title: "title_#{x}",
     interval_type: "days",
     interval_quantity: :rand.uniform(10),
     completed_date: SeedRand.get_due_date()

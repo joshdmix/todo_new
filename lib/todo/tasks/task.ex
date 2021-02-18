@@ -10,7 +10,7 @@ defmodule Todo.Tasks.Task do
     field :interval_quantity, :integer
     field :labels, {:array, :string}
     field :interval_type, :string
-    field :priority, :integer
+    field :priority, :string
     field :start_date, :utc_datetime
     field :title, :string
 

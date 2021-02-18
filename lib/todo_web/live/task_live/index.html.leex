@@ -11,28 +11,39 @@
     return_to: Routes.task_index_path(@socket, :index) %>
 <% end %>
 
-<select id="priority" name="priority" phx-change="select-priority">
-    <option value="">Filter By Priority Level</option>
-    <option value=4>High</option>
-    <option value=3>Medium</option>
-    <option value=2>Low</option>
-    <option value=1>Nil</option>
-</select>
-<button class="text-sm w-1/12 hover:shadow-lg hover:bg-blue-700 border-transparent bg-gray-200" phx-click="get-completed">Completed Only</button>
-<button class="text-sm w-1/12 hover:shadow-lg hover:bg-blue-700 border-transparent bg-gray-200" phx-click="get-uncompleted">Open Tasks Only</button>
-<div class="flex justify-between text-base">
-  <%= for label <- @labels do %>
-      <%= if @selected_labels == nil || label not in @selected_labels do %>
-      <button class="w-1/12 hover:shadow-lg hover:bg-blue-700 border-transparent bg-gray-200" phx-click="select-label" phx-value-label_val=<%= label%>><%= label %></button>
-      <% else %>
-      <button class="w-1/12 hover:shadow-lg hover:bg-blue-300 border-transparent bg-gray-500 text-white" phx-click="deselect-label" phx-value-label_val=<%= label%>><%= label %></button>
+<div class="text-sm grid-rows-3 gap-20">
+  <div class="grid grid-cols-3 border">
+    <%= for completed_option <- @completed_options do %>
+        <%= if completed_option != @selected_completed do %>
+        <button class="hover:shadow-lg hover:bg-blue-700 border bg-gray-200" phx-click="get-completed" phx-value-completed-option=<%= completed_option %>><%= completed_option %></button>
+        <% else %>
+        <button class="hover:shadow-lg hover:bg-blue-300 border bg-gray-500" phx-click="deselect-completed" phx-value-completed-option=<%= completed_option %>><%= completed_option %></button>
+        <% end %>
+        <% end %>
+    <button class="hover:shadow-lg hover:bg-blue-700 border bg-gray-200" phx-click="reset">Reset</button>
+  </div>
+  <div class="grid grid-cols-3 border">
+    <%= for priority <- @priorities do %>
+        <%= if @selected_priority != priority do %>
+        <button class="hover:shadow-lg hover:bg-blue-700 border bg-gray-200" phx-click="select-priority" phx-value-priority-val=<%= priority%>><%= priority %></button>
+        <% else %>
+        <button class="hover:shadow-lg hover:bg-blue-300 border bg-gray-500" phx-click="deselect-priority" phx-value-priority-val=<%= priority%>><%= priority %></button>
 
-      <% end %>
-      <% end %>
-      <button class="w-1/12 hover:bg-blue-300 hover:shadow-lg"  phx-click="reset-labels" %>Reset</button>
+        <% end %>
+        <% end %>
+    </div>
+  <div class="grid grid-cols-7 border">
+    <%= for label <- @labels do %>
+        <%= if @selected_labels == nil || label not in @selected_labels do %>
+           <button class="hover:shadow-lg hover:bg-blue-700 border bg-gray-200" phx-click="select-label" phx-value-label_val=<%= label%>><%= label %></button>
+      <% else %>
+           <button class="hover:shadow-lg hover:bg-blue-300 border bg-gray-500 text-white" phx-click="deselect-label" phx-value-label_val=<%= label%>><%= label %></button>
+        <% end %>
+    <% end %>
+  </div>
 </div>
 <table class="min-w-full divide-y divide-gray-200">
-  <thead class="bg-gray-50">
+  <thead class="">
     <tr>
       <%= for header <- ~w[
       Title
@@ -59,7 +70,7 @@
         <td class="px-6 py-4"><%= task.description %></td>
         <td class="px-6 py-4"><%= task.start_date %></td>
         <td class="px-6 py-4"><%= task.due_date %></td>
-        <td class="px-6 py-4"><%= get_priority(task.priority)  %></td>
+        <td class="px-6 py-4"><%= task.priority  %></td>
         <td class="px-6 py-4"><%= task.labels %></td>
         <td class="px-6 py-4"><%= checkbox(:task, :completed, phx_click: "toggle_completed", phx_value_id: task.id,  value: task.completed)%></td>
         <td>

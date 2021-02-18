@@ -52,6 +52,9 @@ defmodule TodoWeb.TaskLive.Index do
     {:noreply, assign(socket, :tasks, list_tasks())}
   end
 
+
+
+  ### SORTING
   @impl true
   def handle_event("sort", %{"sort_val" => value}, socket) do
     value =
@@ -84,9 +87,10 @@ defmodule TodoWeb.TaskLive.Index do
     {:noreply, assign(socket, {:tasks, Tasks.sort_tasks(:desc, value)}, {:selected_labels, nil})}
   end
 
+
+  ### SELECT / GET BY...
   @impl true
   def handle_event("select-label", %{"label_val" => value}, socket) do
-    IO.inspect(value, label: "select-label")
 
     selected_labels =
       case socket.assigns.selected_labels do
@@ -116,6 +120,26 @@ defmodule TodoWeb.TaskLive.Index do
 
   @impl true
   def handle_event(
+        "get-completed",
+        %{"completed-option" => completed_option},
+        socket
+  ) do
+
+    tasks = case completed_option do
+              "Open" -> Tasks.get_uncompleted_tasks()
+              "Completed" -> Tasks.get_completed_tasks()
+            end
+
+
+    socket = assign(socket, tasks: tasks, selected_labels: nil, selected_completed: completed_option)
+    {:noreply, socket}
+  end
+
+
+  ### DESELECT
+
+  @impl true
+  def handle_event(
         "deselect-priority",
         %{},
         socket
@@ -129,24 +153,6 @@ defmodule TodoWeb.TaskLive.Index do
     {:noreply, socket}
   end
 
-  @impl true
-  def handle_event(
-        "get-completed",
-        %{"completed-option" => completed_option},
-        socket
-  ) do
-    IO.inspect(completed_option, label: "Completed Option")
-
-    tasks = case completed_option do
-              "Open" -> Tasks.get_uncompleted_tasks()
-              "Completed" -> Tasks.get_completed_tasks()
-            end
-
-    IO.inspect(tasks)
-
-    socket = assign(socket, tasks: tasks, selected_labels: nil, selected_completed: completed_option)
-    {:noreply, socket}
-  end
 
 
   @impl true
@@ -177,6 +183,7 @@ defmodule TodoWeb.TaskLive.Index do
     {:noreply, socket}
   end
 
+
   @impl true
   def handle_event("reset", %{}, socket) do
     socket =
@@ -193,12 +200,6 @@ defmodule TodoWeb.TaskLive.Index do
     {:noreply, socket}
   end
 
-  # @impl true
-  # def handle_event("show", %{"task" => task}, socket) do
-  #   IO.inspect(task, label: "TASK")
-  #   {:noreply, live_redirect(socket, to: Routes.task_show_path(socket, :show, task))}
-  # end
-
   defp list_tasks do
     Tasks.list_tasks()
   end
@@ -206,11 +207,4 @@ defmodule TodoWeb.TaskLive.Index do
   defp list_completed_options do
     ["Completed", "Open"]
   end
-
-  # defp get_active_labels(labels, selected_labels) do
-  #   case selected_labels do
-  #     nil -> Tasks.list_alphabetical_labels
-  #     _ -> selected_labels
-  #   end
-  # end
 end

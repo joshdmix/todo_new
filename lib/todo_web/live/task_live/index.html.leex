@@ -32,7 +32,7 @@
     </div>
   <div class="grid grid-cols-7 border">
     <%= for label <- @labels do %>
-        <%= if @selected_labels == nil || label not in @selected_labels do %>
+        <%= if label != @selected_labels do %>
            <button class="hover:shadow-lg hover:bg-blue-700 border bg-gray-200" phx-click="select-label" phx-value-label_val=<%= label%>><%= label %></button>
       <% else %>
            <button class="hover:shadow-lg hover:bg-blue-300 border bg-gray-500 text-white" phx-click="deselect-label" phx-value-label_val=<%= label%>><%= label %></button>

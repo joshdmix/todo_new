@@ -16,10 +16,12 @@ defmodule Todo.Tasks do
   def get_task!(id), do: Repo.get!(Task, id)
 
   def create_task!(attrs \\ %{}) do
-   task =  %Task{}
-    |> Task.changeset(attrs)
-    |> Repo.insert!()
-   {:ok, task}
+    task =
+      %Task{}
+      |> Task.changeset(attrs)
+      |> Repo.insert!()
+
+    {:ok, task}
   end
 
   def update_task(%Task{} = task, attrs) do
@@ -37,7 +39,7 @@ defmodule Todo.Tasks do
   end
 
   def get_tasks(labels, priority, completed, sort_direction, sort_term) do
-    priority  = get_tasks_by_priority(priority)
+    priority = get_tasks_by_priority(priority)
     labels = get_tasks_by_labels(labels)
     completed = get_completed_tasks(completed)
     sort_tasks = sort_tasks(sort_direction, sort_term)
@@ -63,6 +65,7 @@ defmodule Todo.Tasks do
 
   def get_completed_tasks(completed) do
     IO.inspect(completed, label: "COMPLETED")
+
     case completed do
       "Completed" ->
         dynamic([t], t.completed == true)
@@ -124,25 +127,67 @@ defmodule Todo.Tasks do
     %{task | start_date: start_date, due_date: due_date}
   end
 
-  def day_copy(task = %{start_date: start_date, due_date: due_date}) do
-    %{task | start_date: start_date |> Timex.shift(days: 1), due_date: due_date |> Timex.shift(days: 1)}
+  def interval_copy(
+        task = %{
+          interval_type: "days",
+          interval_quantity: interval_quantity,
+          start_date: start_date,
+          due_date: due_date
+        }
+      ) do
+    IO.inspect(task, label: "day")
+
+    %{
+      task
+      | start_date: start_date |> Timex.shift(days: interval_quantity),
+        due_date: due_date |> Timex.shift(days: interval_quantity)
+    }
+    |> Map.from_struct()
+    |> IO.inspect(label: "MAP FROM STRUCT")
+    |> create_task!
   end
 
-  def week_copy(task = %{start_date: start_date, due_date: due_date}) do
-    %{task | start_date: start_date |> Timex.shift(weeks: 1), due_date: due_date |> Timex.shift(weeks: 1)}
+  def interval_copy(
+        task = %{
+          interval_type: "weeks",
+          interval_quantity: interval_quantity,
+          start_date: start_date,
+          due_date: due_date
+        }
+      ) do
+    IO.inspect(task, label: "week")
+
+    %{
+      task
+      | start_date: start_date |> Timex.shift(weeks: interval_quantity),
+        due_date: due_date |> Timex.shift(weeks: interval_quantity)
+    }
+    |> Map.from_struct()
+    |> create_task!
   end
 
-  def month_copy(task = %{start_date: start_date, due_date: due_date}) do
-    %{task | start_date: start_date |> Timex.shift(months: 1), due_date: due_date |> Timex.shift(months: 1)}
-  end
+  def interval_copy(
+        task = %{
+          interval_type: "months",
+          interval_quantity: interval_quantity,
+          start_date: start_date,
+          due_date: due_date
+        }
+      ) do
+    IO.inspect(task, label: "month")
 
+    %{
+      task
+      | start_date: start_date |> Timex.shift(months: interval_quantity),
+        due_date: due_date |> Timex.shift(months: interval_quantity)
+    }
+    |> Map.from_struct()
+    |> create_task!
+  end
 end
 
-
-
-
 #
-#def create_tasks_on_interval(task, interval, repeat_qty, unit \\ :weeks) do
+# def create_tasks_on_interval(task, interval, repeat_qty, unit \\ :weeks) do
 #   shifted_dates
 
 # end

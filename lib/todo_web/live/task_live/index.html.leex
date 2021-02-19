@@ -51,6 +51,7 @@
       Due
       Priority
       Labels
+      Repeat Interval
       Completed] do %>
         <th class="text-left text-base text-gray-500 uppercase w-1/6">
           <div class="flex-none">
@@ -65,13 +66,15 @@
   <tbody class="text-base bg-white divide-y divide-gray-200" id="tasks"
     <%= for task <- @tasks do %>
       <tr id="task-<%= task.id %>" >
-        <td class="px-6 py-4 uppercase text-s"><%= task.title %></td>
-        <td class="px-6 py-4"><%= task.description %></td>
-        <td class="px-6 py-4"><%= task.start_date %></td>
-        <td class="px-6 py-4"><%= task.due_date %></td>
-        <td class="px-6 py-4"><%= task.priority  %></td>
-        <td class="px-6 py-4"><%= task.labels %></td>
-        <td class="px-6 py-4"><%= checkbox(:task, :completed, phx_click: "toggle_completed", phx_value_id: task.id,  value: task.completed)%></td>
+        <td class="px-2 py-4 uppercase text-s"><%= task.title %></td>
+        <td class="px-2 py-4"><%= task.description %></td>
+        <td class="px-2 py-4"><%= task.start_date %></td>
+        <td class="px-2 py-4"><%= task.due_date %></td>
+        <td class="px-2 py-4"><%= task.priority  %></td>
+        <td class="px-2 py-4"><%= task.labels %></td>
+        <td class="px-2 py-4"><%= task.interval_quantity %></td>
+        <td class="px-2 py-4"><%= task.interval_type %></td>
+        <td class="px-2 py-4"><%= checkbox(:task, :completed, phx_click: "toggle_completed", phx_value_id: task.id,  value: task.completed)%></td>
         <td>
           <span><%= live_redirect "Show", to: Routes.task_show_path(@socket, :show, task) %></span>
           <span><%= live_patch "Edit", to: Routes.task_index_path(@socket, :edit, task) %></span>

@@ -33,6 +33,6 @@ defmodule Todo.Tasks.Task do
       :interval_quantity,
       :labels
     ])
-    |> validate_required([:title, :description, :start_date, :due_date, :priority])
+    |> validate_required([:title, :description, :start_date, :due_date, :labels, :priority])
   end
 end

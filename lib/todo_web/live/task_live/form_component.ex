@@ -18,10 +18,6 @@ defmodule TodoWeb.TaskLive.FormComponent do
   @impl true
   def handle_event("validate", %{"task" => task_params}, socket) do
 
-    label = task_params["labels"]
-    IO.inspect(label, label: "label task params")
-    IO.inspect(task_params, label: "task params")
-    IO.inspect(socket.assigns.task, label: "Socket")
     changeset =
       socket.assigns.task
       |> Tasks.change_task(task_params)
@@ -31,14 +27,14 @@ defmodule TodoWeb.TaskLive.FormComponent do
   end
 
   def handle_event("save", %{"task" => task_params}, socket) do
-    IO.inspect(task_params, label: "HANDLE SAVE TASK PARAMS")
-    IO.inspect(socket, label: "socket")
     save_task(socket, socket.assigns.action, task_params)
   end
 
   defp save_task(socket, :edit, task_params) do
     case Tasks.update_task(socket.assigns.task, task_params) do
-      {:ok, _task} ->
+      {:ok, task} ->
+        create_copies?(:edit, task)
+
         {:noreply,
          socket
          |> put_flash(:info, "Task updated successfully")
@@ -51,7 +47,9 @@ defmodule TodoWeb.TaskLive.FormComponent do
 
   defp save_task(socket, :new, task_params) do
     case Tasks.create_task!(task_params) do
-      {:ok, _task} ->
+      {:ok, task} ->
+        create_copies?(:new, task)
+
         {:noreply,
          socket
          |> put_flash(:info, "Task created successfully")
@@ -59,6 +57,21 @@ defmodule TodoWeb.TaskLive.FormComponent do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
+    end
+  end
+
+  defp create_copies?(:new, task = %{interval_quantity: interval_quantity}) do
+    if interval_quantity > 0 do
+      Tasks.interval_copy(task)
+    end
+  end
+
+  defp create_copies?(:edit, task = %{interval_quantity: interval_quantity, interval_type: interval_type}) do
+    original_task = Tasks.get_task!(task.id)
+
+    if interval_quantity != original_task.interval_quantity || interval_type != original_task.interval_type do
+      IO.inspect(label: "call tasks interval copy")
+      Tasks.interval_copy(task)
     end
   end
 end

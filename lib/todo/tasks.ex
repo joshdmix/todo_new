@@ -6,9 +6,8 @@ defmodule Todo.Tasks do
   import Ecto.Query, warn: false
   alias Todo.Repo
 
-  alias Todo.Tasks.Task
-  alias Todo.Tasks.Label
   alias Todo.Labels
+  alias Todo.Tasks.{Label, Task}
 
   def list_tasks do
     Repo.all(Task)
@@ -19,7 +18,6 @@ defmodule Todo.Tasks do
   def create_task!(attrs \\ %{}) do
    task =  %Task{}
     |> Task.changeset(attrs)
-    |> IO.inspect(label: "CHANGESET")
     |> Repo.insert!()
    {:ok, task}
   end
@@ -42,21 +40,21 @@ defmodule Todo.Tasks do
     priority  = get_tasks_by_priority(priority)
     labels = get_tasks_by_labels(labels)
     completed = get_completed_tasks(completed)
+    sort_tasks = sort_tasks(sort_direction, sort_term)
 
     query =
       from t in Task,
         where: ^priority,
         where: ^labels,
         where: ^completed,
-        order_by: [{^sort_direction, ^sort_term}]
+        order_by: ^sort_tasks
 
     IO.inspect(query, label: "query!!!!!")
     Repo.all(query) |> format_tasks()
   end
 
   def sort_tasks(sort_direction \\ :asc, sort_term \\ :start_date) do
-    values = [{sort_direction, sort_term}]
-    Repo.all(from t in Task, order_by: ^values)
+    [{sort_direction, sort_term}]
   end
 
   def get_completed_tasks(nil) do
@@ -64,6 +62,7 @@ defmodule Todo.Tasks do
   end
 
   def get_completed_tasks(completed) do
+    IO.inspect(completed, label: "COMPLETED")
     case completed do
       "Completed" ->
         dynamic([t], t.completed == true)
@@ -118,13 +117,29 @@ defmodule Todo.Tasks do
     Enum.map(tasks, &format_dates(&1))
   end
 
-  defp format_dates(task) do
+  def format_dates(task) do
     format_string = "%A %d %B %Y %k:%M %z"
     start_date = task.start_date |> Timex.format!(format_string, :strftime)
     due_date = task.due_date |> Timex.format!(format_string, :strftime)
     %{task | start_date: start_date, due_date: due_date}
   end
+
+  def day_copy(task = %{start_date: start_date, due_date: due_date}) do
+    %{task | start_date: start_date |> Timex.shift(days: 1), due_date: due_date |> Timex.shift(days: 1)}
+  end
+
+  def week_copy(task = %{start_date: start_date, due_date: due_date}) do
+    %{task | start_date: start_date |> Timex.shift(weeks: 1), due_date: due_date |> Timex.shift(weeks: 1)}
+  end
+
+  def month_copy(task = %{start_date: start_date, due_date: due_date}) do
+    %{task | start_date: start_date |> Timex.shift(months: 1), due_date: due_date |> Timex.shift(months: 1)}
+  end
+
 end
+
+
+
 
 #
 #def create_tasks_on_interval(task, interval, repeat_qty, unit \\ :weeks) do

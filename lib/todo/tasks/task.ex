@@ -8,7 +8,8 @@ defmodule Todo.Tasks.Task do
     field :description, :string
     field :due_date, :utc_datetime
     field :interval_quantity, :integer
-    field :labels, {:array, :string}
+
+    field :labels, :string
     field :interval_type, :string
     field :priority, :string
     field :start_date, :utc_datetime
@@ -32,6 +33,6 @@ defmodule Todo.Tasks.Task do
       :interval_quantity,
       :labels
     ])
-    |> validate_required([:title, :description, :start_date, :due_date, :priority, :completed])
+    |> validate_required([:title, :description, :start_date, :due_date, :priority])
   end
 end

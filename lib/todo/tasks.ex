@@ -17,9 +17,11 @@ defmodule Todo.Tasks do
   def get_task!(id), do: Repo.get!(Task, id)
 
   def create_task!(attrs \\ %{}) do
-    %Task{}
+   task =  %Task{}
     |> Task.changeset(attrs)
+    |> IO.inspect(label: "CHANGESET")
     |> Repo.insert!()
+   {:ok, task}
   end
 
   def update_task(%Task{} = task, attrs) do
@@ -72,11 +74,11 @@ defmodule Todo.Tasks do
   end
 
   def get_tasks_by_labels(nil) do
-    dynamic([t], nil not in t.labels)
+    dynamic([t], not is_nil(t.labels))
   end
 
   def get_tasks_by_labels(label) do
-    dynamic([t], ^label in t.labels)
+    dynamic([t], ^label == t.labels)
   end
 
   def get_tasks_by_priority(nil) do

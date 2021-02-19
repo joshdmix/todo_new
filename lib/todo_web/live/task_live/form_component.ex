@@ -7,6 +7,8 @@ defmodule TodoWeb.TaskLive.FormComponent do
   def update(%{task: task} = assigns, socket) do
     changeset = Tasks.change_task(task)
 
+    socket = assign(socket, [{:labels_list, Tasks.list_alphabetical_labels}, {:priorities, Tasks.list_priorities}])
+
     {:ok,
      socket
      |> assign(assigns)
@@ -15,6 +17,11 @@ defmodule TodoWeb.TaskLive.FormComponent do
 
   @impl true
   def handle_event("validate", %{"task" => task_params}, socket) do
+
+    label = task_params["labels"]
+    IO.inspect(label, label: "label task params")
+    IO.inspect(task_params, label: "task params")
+    IO.inspect(socket.assigns.task, label: "Socket")
     changeset =
       socket.assigns.task
       |> Tasks.change_task(task_params)
@@ -24,6 +31,8 @@ defmodule TodoWeb.TaskLive.FormComponent do
   end
 
   def handle_event("save", %{"task" => task_params}, socket) do
+    IO.inspect(task_params, label: "HANDLE SAVE TASK PARAMS")
+    IO.inspect(socket, label: "socket")
     save_task(socket, socket.assigns.action, task_params)
   end
 

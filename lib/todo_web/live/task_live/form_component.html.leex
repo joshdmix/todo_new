@@ -22,29 +22,29 @@
   <%= datetime_select f, :due_date %>
   <%= error_tag f, :due_date %>
 
-  <%= label f, :priority %>
-  <%= number_input f, :priority %>
-  <%= error_tag f, :priority %>
-
   <%= label f, :labels %>
-  <%= multiple_select f, :labels, @labels %>
+  <%= select f, :labels, @labels_list, prompt: "Label" %>
   <%= error_tag f, :labels %>
+
+  <%= label f, :priority %>
+  <%= select f, :priority, @priorities, prompt: "Priority Level" %>
+  <%= error_tag f, :priority %>
 
   <%= label f, :completed %>
   <%= checkbox f, :completed %>
   <%= error_tag f, :completed %>
 
-  <%= label f, :completed_date %>
-  <%= datetime_select f, :completed_date %>
-  <%= error_tag f, :completed_date %>
+  <!-- <%= label f, :completed_date %> -->
+  <!-- <%= datetime_select f, :completed_date %> -->
+  <!-- <%= error_tag f, :completed_date %> -->
 
-  <%= label f, :interval_type %>
-  <%= text_input f, :interval_type %>
-  <%= error_tag f, :interval_type %>
+  <!-- <%= label f, :interval_type %> -->
+  <!-- <%= text_input f, :interval_type %> -->
+  <!-- <%= error_tag f, :interval_type %> -->
 
-  <%= label f, :interval_quantity %>
-  <%= number_input f, :interval_quantity %>
-  <%= error_tag f, :interval_quantity %>
+  <!-- <%= label f, :interval_quantity %> -->
+  <!-- <%= number_input f, :interval_quantity %> -->
+  <!-- <%= error_tag f, :interval_quantity %> -->
 
   <%= submit "Save", phx_disable_with: "Saving..." %>
 </form>

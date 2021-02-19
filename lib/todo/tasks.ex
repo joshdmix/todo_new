@@ -36,28 +36,92 @@ defmodule Todo.Tasks do
     Task.changeset(task, attrs)
   end
 
+  def get_tasks(labels, priority, completed, sort_direction, sort_term) do
+    IO.inspect(label: "HERE")
+    IO.inspect(sort_direction, label: "sort direction")
+    IO.inspect(sort_term, label: "sort term")
 
-  def sort_tasks(direction \\ :asc, field \\ :start_date) do
-    values = [{direction, field}]
-    Repo.all(from t in Task, order_by: ^values) |> format_tasks()
+    q1 = get_tasks_by_priority(priority)
+
+    q2 = get_tasks_by_labels(labels)
+
+    q3 = get_completed_tasks(completed)
+
+    IO.inspect(q1, label: "q1")
+    IO.inspect(q2, label: "q2")
+    IO.inspect(q3, label: "q3")
+
+    if priority == nil do
+      if completed == nil do
+        if labels == nil do
+          Repo.all(from t in Task, order_by: [{^sort_direction, ^sort_term}])
+        end
+      end
+    end
+
+    # IO.inspect(q3)
+
+    # Task |> where()
+    # order_by: [sort_direction: sort_term],
+    # [
+    #   sort_tasks(sort_direction, sort_term),
+    #   get_completed_tasks(completed),
+    #   get_tasks_by_priority(priority)
+    # ]
+    # |> IO.inspect(label: "HERE")
+    # |> Enum.filter(&(!is_nil(&1)))
+    # |> IO.inspect(label: "HERE")
+    # |> List.first
+    # |> Enum.join(" and ")
+    # |> IO.inspect(label: "HERE")
+    # |> Repo.all()
   end
 
-  def get_completed_tasks() do
-    Repo.all(from t in Task, where: t.completed == true)
+  def sort_tasks(sort_direction \\ :asc, sort_term \\ :start_date) do
+    values = [{sort_direction, sort_term}]
+    # Repo.all(from t in Task, order_by: ^values) |> format_tasks()
+    Repo.all(from t in Task, order_by: ^values)
   end
 
-  def get_uncompleted_tasks() do
-    Repo.all(from t in Task, where: t.completed == false)
+  def get_completed_tasks(nil),
+    do: from(t in Task, where: t.completed == true or t.completed == false)
+
+  def get_completed_tasks(completed) do
+    IO.inspect(completed, label: "GET COMPLETED TASKS")
+    case completed do
+      "Completed" ->
+        from t in Task, where: t.completed == true
+
+      _ ->
+        from t in Task, where: t.completed != true
+    end
   end
 
-  def get_tasks_by_labels(labels) do
-    query = &Repo.all(from(t in Task, where: ^&1 in t.labels))
-    labels |> Enum.map(query) |> List.flatten() |> Enum.uniq() |> format_tasks()
+
+
+  # def get_completed_tasks(:true) do
+  #   Repo.all(from t in Task, where: t.completed == true)
+  # end
+
+  # def get_uncompleted_tasks(:false) do
+  #   Repo.all(from t in Task, where: t.completed == false)
+  # end
+
+  def get_tasks_by_labels(nil), do: from(t in Task, where: nil not in t.labels)
+
+  def get_tasks_by_labels(label) do
+    from t in Task, where: ^label in t.labels
+    # query = &Repo.all(from(t in Task, where: ^&1 in t.labels))
+    # labels |> Enum.map(query) |> List.flatten() |> Enum.uniq() |> format_tasks()
   end
+
+  def get_tasks_by_priority(nil), do: from(t in Task, where: not is_nil(t.priority))
 
   def get_tasks_by_priority(priority) do
-    Repo.all(from t in Task, where: t.priority == ^priority) |> format_tasks()
+    from t in Task, where: t.priority == ^priority
   end
+
+  ###############
 
   def get_shift_list(date, interval, repeat_qty, unit) do
     repeat_list = 1..repeat_qty |> Enum.to_list()

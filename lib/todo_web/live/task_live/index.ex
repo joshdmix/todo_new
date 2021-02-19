@@ -8,17 +8,28 @@ defmodule TodoWeb.TaskLive.Index do
   def mount(_params, _session, socket) do
     socket =
       assign(socket,
-        tasks: Tasks.sort_tasks(),
         labels: Tasks.list_alphabetical_labels(),
         priorities: Tasks.list_priorities(),
         completed_options: list_completed_options(),
         selected_labels: nil,
         sorted_tasks: nil,
         selected_priority: nil,
-        selected_completed: nil
+        selected_completed: nil,
+        sort_direction: :asc,
+        send_sort_term: :start_date,
+        send_sort_direction: :asc,
+        send_labels: nil,
+        send_completed: nil,
+        send_priority: nil
       )
 
-    {:ok, socket}
+
+    tasks = get_tasks(socket)
+    # tasks = get_tasks(socket)
+
+    # IO.inspect(tasks, label: "MOUNT TASKS")
+
+    {:ok, assign(socket, :tasks, tasks)}
   end
 
   @impl true
@@ -44,15 +55,38 @@ defmodule TodoWeb.TaskLive.Index do
     |> assign(:task, nil)
   end
 
+  defp get_tasks(socket) do
+    IO.inspect(socket.assigns)
+    get_tasks2(socket.assigns)
+
+  end
+
+
+  defp get_tasks2(_assigns = %{
+         send_labels: send_labels,
+         send_priority: send_priority,
+         send_completed: send_completed,
+         send_sort_direction: send_sort_direction,
+         send_sort_term: send_sort_term
+       }) do
+    Tasks.get_tasks(
+      send_labels,
+      send_priority,
+      send_completed,
+      send_sort_direction,
+      send_sort_term
+    )
+  end
+
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     task = Tasks.get_task!(id)
     {:ok, _} = Tasks.delete_task(task)
 
-    {:noreply, assign(socket, :tasks, list_tasks())}
+    tasks = get_tasks(socket)
+
+    {:noreply, assign(socket, :tasks, tasks)}
   end
-
-
 
   ### SORTING
   @impl true
@@ -68,7 +102,16 @@ defmodule TodoWeb.TaskLive.Index do
         "Completed" -> :completed
       end
 
-    {:noreply, assign(socket, {:tasks, Tasks.sort_tasks(:asc, value)}, {:selected_labels, nil})}
+
+    socket =
+      assign(socket,
+        send_sort_term: value,
+        send_sort_direction: :asc
+      )
+
+    tasks = get_tasks(socket)
+
+    {:noreply, assign(socket, :tasks, tasks)}
   end
 
   @impl true
@@ -84,38 +127,48 @@ defmodule TodoWeb.TaskLive.Index do
         "Completed" -> :completed
       end
 
-    {:noreply, assign(socket, {:tasks, Tasks.sort_tasks(:desc, value)}, {:selected_labels, nil})}
-  end
+    socket =
+      assign(socket,
+        send_sort_term: value,
+        send_sort_direction: :desc
+      )
 
+    tasks = get_tasks(socket)
+
+    {:noreply, assign(socket, :tasks, tasks)}
+  end
 
   ### SELECT / GET BY...
   @impl true
   def handle_event("select-label", %{"label_val" => value}, socket) do
-
-    selected_labels =
-      case socket.assigns.selected_labels do
-        nil -> [value]
-        _ -> [value | socket.assigns.selected_labels]
-      end
+    selected_labels = value
+      # case socket.assigns.selected_labels do
+      #   nil -> [value]
+      #   _ -> [value | socket.assigns.selected_labels]
+      # end
 
     socket =
       assign(socket,
-        tasks: Tasks.get_tasks_by_labels(selected_labels),
+        send_labels: selected_labels,
         selected_labels: selected_labels
       )
 
-    {:noreply, socket}
+    tasks = get_tasks(socket)
+
+    {:noreply, assign(socket, :tasks, tasks)}
   end
 
   @impl true
   def handle_event("select-priority", %{"priority-val" => priority}, socket) do
     socket =
       assign(socket,
-        tasks: Tasks.get_tasks_by_priority(priority),
-        selected_priority: priority
+        selected_priority: priority,
+        send_priority: priority
       )
 
-    {:noreply, socket}
+    tasks = get_tasks(socket)
+
+    {:noreply, assign(socket, :tasks, tasks)}
   end
 
   @impl true
@@ -125,16 +178,15 @@ defmodule TodoWeb.TaskLive.Index do
         socket
   ) do
 
-    tasks = case completed_option do
-              "Open" -> Tasks.get_uncompleted_tasks()
-              "Completed" -> Tasks.get_completed_tasks()
-            end
 
+    socket = assign(socket, selected_completed: completed_option, send_completed: completed_option)
 
-    socket = assign(socket, tasks: tasks, selected_labels: nil, selected_completed: completed_option)
-    {:noreply, socket}
+    IO.inspect(completed_option, label: "COMPLETED OPTION")
+    IO.inspect(socket, label: "Socket")
+    tasks = get_tasks(socket)
+
+    {:noreply, assign(socket, :tasks, tasks)}
   end
-
 
   ### DESELECT
 
@@ -146,50 +198,67 @@ defmodule TodoWeb.TaskLive.Index do
       ) do
     socket =
       assign(socket,
-        tasks: Tasks.sort_tasks(),
+        send_priority: nil,
         selected_priority: nil
       )
 
-    {:noreply, socket}
+    tasks = get_tasks(socket)
+
+    {:noreply, assign(socket, :tasks, tasks)}
   end
-
-
 
   @impl true
   def handle_event(
         "deselect-label",
-        %{"label_val" => value},
-        socket = %{assigns: %{selected_labels: selected_labels}}
+    %{"label_val" => _value},
+    socket
+        # socket = %{assigns: %{selected_labels: selected_labels}}
       ) do
-    selected_labels = selected_labels |> List.delete(value)
+    # selected_labels = selected_labels |> List.delete(value)
+
 
     socket =
       assign(socket,
-        tasks: Tasks.get_tasks_by_labels(selected_labels),
-        selected_labels: selected_labels
+        send_labels: nil,
+        selected_labels: nil
       )
 
-    {:noreply, socket}
+    tasks = get_tasks(socket)
+
+    {:noreply, assign(socket, :tasks, tasks)}
+
   end
 
   @impl true
   def handle_event("deselect-completed", %{}, socket) do
     socket =
       assign(socket,
-        tasks: Tasks.sort_tasks(),
+        send_completed: nil,
         selected_completed: nil
       )
 
-    {:noreply, socket}
-  end
+    tasks = get_tasks(socket)
 
+    {:noreply, assign(socket, :tasks, tasks)}
+  end
 
   @impl true
   def handle_event("reset", %{}, socket) do
     socket =
-      assign(socket, tasks: Tasks.sort_tasks(), selected_labels: nil, selected_priority: nil, selected_completed: nil)
+      assign(socket,
+        selected_labels: nil,
+        selected_priority: nil,
+        selected_completed: nil,
+        send_labels: nil,
+        send_priority: nil,
+        send_completed: nil,
+        send_sort_term: :start_date,
+        send_sort_direction: :asc
+      )
 
-    {:noreply, socket}
+    tasks = get_tasks(socket)
+
+    {:noreply, assign(socket, :tasks, tasks)}
   end
 
   @impl true
@@ -198,10 +267,6 @@ defmodule TodoWeb.TaskLive.Index do
     Tasks.update_task(task, %{completed: !task.completed})
 
     {:noreply, socket}
-  end
-
-  defp list_tasks do
-    Tasks.list_tasks()
   end
 
   defp list_completed_options do

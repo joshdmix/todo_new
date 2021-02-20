@@ -1,5 +1,3 @@
-<h1>Show Task</h1>
-
 <%= if @live_action in [:edit] do %>
   <%= live_modal @socket, TodoWeb.TaskLive.FormComponent,
     id: @task.id,
@@ -9,59 +7,79 @@
     return_to: Routes.task_show_path(@socket, :show, @task) %>
 <% end %>
 
-<ul>
+<ul class="uppercase text-green-600 :whitespace-normal">
 
   <li>
+  <div class=" text-center shadow rounded-xl">
     <strong>Title:</strong>
     <%= @task.title %>
+    </div>
   </li>
 
   <li>
+  <div class=" text-center shadow rounded-xl">
     <strong>Description:</strong>
     <%= @task.description %>
+    </div>
   </li>
 
   <li>
+  <div class=" text-center shadow rounded-xl">
     <strong>Start date:</strong>
     <%= @task.start_date %>
+    </div>
   </li>
 
   <li>
+  <div class=" text-center shadow rounded-xl">
     <strong>Due date:</strong>
     <%= @task.due_date %>
+    </div>
   </li>
 
   <li>
+  <div class=" text-center shadow rounded-xl">
     <strong>Priority:</strong>
     <%= @task.priority %>
+    </div>
   </li>
 
   <li>
+  <div class=" text-center shadow rounded-xl">
     <strong>Labels:</strong>
     <%= @task.labels %>
+    </div>
   </li>
 
   <li>
+  <div class=" text-center shadow rounded-xl">
     <strong>Completed:</strong>
     <%= @task.completed %>
+    </div>
   </li>
 
   <li>
+  <div class=" text-center shadow rounded-xl">
     <strong>Completed date:</strong>
     <%= @task.completed_date %>
+    </div>
   </li>
 
   <li>
+  <div class=" text-center shadow rounded-xl">
     <strong>Interval type:</strong>
     <%= @task.interval_type %>
+    </div>
   </li>
 
   <li>
+  <div class=" text-center shadow rounded-xl">
     <strong>Interval quantity:</strong>
     <%= @task.interval_quantity %>
+    </div>
   </li>
 
 </ul>
 
-<span><%= live_patch "Edit", to: Routes.task_show_path(@socket, :edit, @task), class: "button" %></span>
-<span><%= live_redirect "Back", to: Routes.task_index_path(@socket, :index) %></span>
+<span><%= live_patch "Edit", to: Routes.task_show_path(@socket, :edit, @task), class: "button bg-green-700" %></span>
+<span><%= live_redirect "Back", to: Routes.task_index_path(@socket, :index), class: "button bg-green-700" %></span>

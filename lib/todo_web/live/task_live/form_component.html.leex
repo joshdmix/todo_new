@@ -1,4 +1,3 @@
-
 <%= f = form_for @changeset, "#",
   id: "task-form",
   phx_target: @myself,
@@ -10,50 +9,50 @@
     <div class="text-center">
       <h1 class="my-3 text-sm font-semibold text-gray-700 dark:text-gray-200"><%= @title %></h1>
     </div>
-    <div class="m-7">
-      <div class="mb-6">
+    <div class="m-7 uppercase text-green-600">
+      <div class="mb-6 container">
         <%= label f, :title %>
         <%= text_input f, :title %>
         <%= error_tag f, :title %>
       </div>
-      <div class="mb-6">
+      <div class="mb-6 container">
         <%= label f, :description %>
         <%= text_input f, :description %>
         <%= error_tag f, :description %>
       </div>
 
-      <div class="mb-6">
+      <div class="mb-6 container">
         <%= label f, :start_date %>
         <%= datetime_select f, :start_date %>
         <%= error_tag f, :start_date %>
       </div>
 
-      <div class="mb-6">
+      <div class="mb-6 container">
         <%= label f, :due_date %>
         <%= datetime_select f, :due_date %>
         <%= error_tag f, :due_date %>
       </div>
 
-      <div class="mb-6">
+      <div class="mb-6 container">
         <%= label f, :labels %>
         <%= select f, :labels, @labels_list, prompt: "Label" %>
         <%= error_tag f, :labels %>
       </div>
 
-      <div class="mb-6">
+      <div class="mb-6 container">
         <%= label f, :priority %>
         <%= select f, :priority, @priorities, prompt: "Priority Level" %>
         <%= error_tag f, :priority %>
       </div>
 
-      <div class="mb-6">
+      <div class="mb-6 container">
         <%= label f, :completed %>
         <%= checkbox f, :completed %>
         <%= error_tag f, :completed %>
       </div>
 
 
-      <div class="grid grid-cols-4" phx_change="interval">
+      <div class="grid grid-cols-4 container" phx_change="interval">
         <%= label f, "Repeat task every" %>
         <%= select f, :interval_quantity, 0..30 |> Enum.to_list  %>
         <%= error_tag f, :interval_quantity %>

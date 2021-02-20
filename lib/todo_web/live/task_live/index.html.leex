@@ -1,5 +1,3 @@
-<h1 class="text-base">Listing Tasks</h1>
-
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, TodoWeb.TaskLive.FormComponent,
     id: @task.id || :new,
@@ -9,80 +7,87 @@
     return_to: Routes.task_index_path(@socket, :index) %>
 <% end %>
 
-<div class="text-sm grid-rows-3 gap-20">
-  <div class="grid grid-cols-3 border">
+<div class="text-lg text-green-600 grid-rows-3 gap-20">
+<div class="grid grid-cols-2 border-none">
+<%= live_patch "Add New Task", to: Routes.task_index_path(@socket, :new), class: "button bg-green-700 m-3"%>
+    <button class="uppercase  hover:bg-green-900 bg-green-700  text-white border-none shadow m-3" phx-click="reset">Reset</button>
+    </div>
+  <div class="grid grid-cols-2 border-none">
     <%= for completed_option <- @completed_options do %>
         <%= if completed_option != @selected_completed do %>
-        <button class="hover:shadow-lg hover:bg-blue-700 border bg-gray-200" phx-click="get-completed" phx-value-completed-option=<%= completed_option %>><%= completed_option %></button>
+        <button class="uppercase hover:bg-green-700 border-none bg-green-200 m-3 shadow" phx-click="get-completed" phx-value-completed-option=<%= completed_option %>><%= completed_option %></button>
         <% else %>
-        <button class="hover:shadow-lg hover:bg-blue-300 border bg-gray-500" phx-click="deselect-completed" phx-value-completed-option=<%= completed_option %>><%= completed_option %></button>
+        <button class="uppercase hover:bg-green-300 border-none bg-green-500 m-3 shadow" phx-click="deselect-completed" phx-value-completed-option=<%= completed_option %>><%= completed_option %></button>
         <% end %>
         <% end %>
-    <button class="hover:shadow-lg hover:bg-blue-700 border bg-gray-200" phx-click="reset">Reset</button>
   </div>
-  <div class="grid grid-cols-3 border">
+  <div class="grid grid-cols-3 border-none">
     <%= for priority <- @priorities do %>
         <%= if @selected_priority != priority do %>
-        <button class="hover:shadow-lg hover:bg-blue-700 border bg-gray-200" phx-click="select-priority" phx-value-priority-val=<%= priority%>><%= priority %></button>
+        <button class="shadow uppercase  hover:bg-green-700 border-none bg-green-200 m-3" phx-click="select-priority" phx-value-priority-val=<%= priority%>><%= priority %></button>
         <% else %>
-        <button class="hover:shadow-lg hover:bg-blue-300 border bg-gray-500" phx-click="deselect-priority" phx-value-priority-val=<%= priority%>><%= priority %></button>
+        <button class="shadow uppercase  hover:bg-green-300 border-none bg-green-500 m-3" phx-click="deselect-priority" phx-value-priority-val=<%= priority%>><%= priority %></button>
 
         <% end %>
         <% end %>
     </div>
-  <div class="grid grid-cols-7 border">
+  <div class="grid grid-cols-7 border-none">
     <%= for label <- @labels do %>
         <%= if label != @selected_labels do %>
-           <button class="hover:shadow-lg hover:bg-blue-700 border bg-gray-200" phx-click="select-label" phx-value-label_val=<%= label%>><%= label %></button>
+           <button class="shadow uppercase  hover:bg-green-700 border-none bg-green-200 m-3" phx-click="select-label" phx-value-label_val=<%= label%>><%= label %></button>
       <% else %>
-           <button class="hover:shadow-lg hover:bg-blue-300 border bg-gray-500 text-white" phx-click="deselect-label" phx-value-label_val=<%= label%>><%= label %></button>
+           <button class="shadow uppercase  hover:bg-green-300 border-none bg-green-500 m-3" phx-click="deselect-label" phx-value-label_val=<%= label%>><%= label %></button>
         <% end %>
     <% end %>
   </div>
 </div>
 
-<table class="min-w-full divide-y divide-gray-200">
-  <thead class="">
-    <tr>
+
+<table class="table-fixed shadow">
+  <thead class="bg-green-200">
+    <tr class="rounded-l-3xl">
       <%= for header <- ~w[
       Title
-      Description
+      Desc
       Start
       Due
       Priority
       Labels
-      Repeat Interval
-      Completed] do %>
-        <th class="text-left text-base text-gray-500 uppercase w-1/6">
-          <div class="flex-none">
-          <button class="h-5 border-transparent hover:bg-blue-500" phx-click="sort" phx-value-sort_val=<%= header %>>▲</button>
+      Done
+      ] do %>
+      <div class="grid grid-rows-2">
+          <th class="w-1/12 text-center text-base text-green-600 uppercase border-none-black">
           <%= header %>
-          <button class="h-5 border-transparent hover:bg-blue-500"  phx-click="sort-desc" phx-value-sort_val=<%= header %>>▼</button>
+          <div>
+          <button class="text-3xl h-10 w-10 border-none hover:bg-green-500" phx-click="sort" phx-value-sort_val=<%= header %>>▲</button>
+          <button class="text-3xl h-10 w-10 border-none hover:bg-green-500" phx-click="sort-desc" phx-value-sort_val=<%= header %>>▼</button>
           </div>
           </th>
+          </div>
         <% end %>
+      <%= for header <- ~w[Options] do %>
+      <th class="w-1/12 text-center text-base text-green-600 uppercase border-none-black"><%= header %></th>
+      <% end %>
     </tr>
   </thead>
-  <tbody class="text-base bg-white divide-y divide-gray-200" id="tasks"
+  <tbody class="bg-green-100 uppercase text-sm" id="tasks">
     <%= for task <- @tasks do %>
-      <tr id="task-<%= task.id %>" >
-        <td class="px-2 py-4 uppercase text-s"><%= task.title %></td>
-        <td class="px-2 py-4"><%= task.description %></td>
-        <td class="px-2 py-4"><%= task.start_date %></td>
-        <td class="px-2 py-4"><%= task.due_date %></td>
-        <td class="px-2 py-4"><%= task.priority  %></td>
-        <td class="px-2 py-4"><%= task.labels %></td>
-        <td class="px-2 py-4"><%= task.interval_quantity %></td>
-        <td class="px-2 py-4"><%= task.interval_type %></td>
-        <td class="px-2 py-4"><%= checkbox(:task, :completed, phx_click: "toggle_completed", phx_value_id: task.id,  value: task.completed)%></td>
+      <tr class="m-1.5 rounded-l-3xl text-green-900" id="task-<%= task.id %>" >
+        <td class="px-2 py-4 uppercase text-center"><%= task.title %></td>
+        <td class="overflow-hidden px-2 py-4 text-center"><%= task.description %></td>
+        <td class="px-2 py-4 text-center"><%= task.start_date %></td>
+        <td class="px-2 py-4 text-center"><%= task.due_date %></td>
+        <td class="px-2 py-4 text-center"><%= task.priority  %></td>
+        <td class="px-2 py-4 text-center"><%= task.labels %></td>
+        <td class="px-2 py-4 text-center"><%= checkbox(:task, :completed, phx_click: "toggle_completed", phx_value_id: task.id,  value: task.completed)%></td>
         <td>
-          <span><%= live_redirect "Show", to: Routes.task_show_path(@socket, :show, task) %></span>
-          <span><%= live_patch "Edit", to: Routes.task_index_path(@socket, :edit, task) %></span>
-          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: task.id, data: [confirm: "Are you sure?"] %></span>
+          <span class="text-lg text-green-900"><%= live_redirect "Show", to: Routes.task_show_path(@socket, :show, task) %></span>
+          </br>
+          <span class="text-lg text-green-900"><%= live_patch "Edit", to: Routes.task_index_path(@socket, :edit, task) %></span>
+          </br>
+          <span class="text-lg text-green-900"><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: task.id, data: [confirm: "Are you sure?"] %></span>
         </td>
       </tr>
     <% end %>
   </tbody>
 </table>
-
-<span><%= live_patch "New Task", to: Routes.task_index_path(@socket, :new) %></span>

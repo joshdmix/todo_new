@@ -8,14 +8,15 @@
 <% end %>
 
 <div class="text-lg text-green-600 grid-rows-3 gap-20">
-<div class="grid grid-cols-2 border-none">
+<div class="grid grid-cols-3 border-none">
 <%= live_patch "Add New Task", to: Routes.task_index_path(@socket, :new), class: "button bg-green-700 m-3"%>
+    <button class="uppercase  hover:bg-green-900 bg-green-700  text-white border-none shadow m-3" phx-click="show_today"><%= @today %></button>
     <button class="uppercase  hover:bg-green-900 bg-green-700  text-white border-none shadow m-3" phx-click="reset">Reset</button>
     </div>
   <div class="grid grid-cols-2 border-none">
     <%= for completed_option <- @completed_options do %>
         <%= if completed_option != @selected_completed do %>
-        <button class="uppercase hover:bg-green-700 border-none bg-green-200 m-3 shadow" phx-click="get-completed" phx-value-completed-option=<%= completed_option %>><%= completed_option %></button>
+        <button disabled class="uppercase hover:bg-green-700 border-none bg-green-200 m-3 shadow" phx-click="get-completed" phx-value-completed-option=<%= completed_option %>><%= completed_option %></button>
         <% else %>
         <button class="uppercase hover:bg-green-300 border-none bg-green-500 m-3 shadow" phx-click="deselect-completed" phx-value-completed-option=<%= completed_option %>><%= completed_option %></button>
         <% end %>

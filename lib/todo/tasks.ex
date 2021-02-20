@@ -38,17 +38,19 @@ defmodule Todo.Tasks do
     Task.changeset(task, attrs)
   end
 
-  def get_tasks(labels, priority, completed, sort_direction, sort_term) do
+  def get_tasks(labels, priority, completed, sort_direction, sort_term, today) do
     priority = get_tasks_by_priority(priority)
     labels = get_tasks_by_labels(labels)
     completed = get_completed_tasks(completed)
     sort_tasks = sort_tasks(sort_direction, sort_term)
+    todays_tasks = get_todays_tasks(today)
 
     query =
       from t in Task,
         where: ^priority,
         where: ^labels,
         where: ^completed,
+        where: ^todays_tasks,
         order_by: ^sort_tasks
 
     IO.inspect(query, label: "query!!!!!")
@@ -57,6 +59,16 @@ defmodule Todo.Tasks do
 
   def sort_tasks(sort_direction \\ :asc, sort_term \\ :start_date) do
     [{sort_direction, sort_term}]
+  end
+
+  def get_todays_tasks(nil) do
+    future = Timex.now |> Timex.shift(years: 1000)
+    dynamic([t], t.start_date < ^future)
+  end
+
+  def get_todays_tasks(today) do
+    todays_date = today |> DateTime.to_date
+    dynamic([t], t.start_date == ^todays_date)
   end
 
   def get_completed_tasks(nil) do
@@ -118,6 +130,11 @@ defmodule Todo.Tasks do
 
   defp format_tasks(tasks) do
     Enum.map(tasks, &format_dates(&1))
+  end
+
+  def get_todays_date() do
+    format_string = "%a %B %d %Y"
+    Timex.now() |> Timex.format!(format_string, :strftime)
   end
 
   def format_dates(task) do

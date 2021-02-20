@@ -20,7 +20,9 @@ defmodule TodoWeb.TaskLive.Index do
         send_sort_direction: :asc,
         send_labels: nil,
         send_completed: nil,
-        send_priority: nil
+        send_priority: nil,
+        send_today: nil,
+        today: Tasks.get_todays_date()
       )
 
 
@@ -67,14 +69,16 @@ defmodule TodoWeb.TaskLive.Index do
          send_priority: send_priority,
          send_completed: send_completed,
          send_sort_direction: send_sort_direction,
-         send_sort_term: send_sort_term
+         send_sort_term: send_sort_term,
+         send_today: send_today
        }) do
     Tasks.get_tasks(
       send_labels,
       send_priority,
       send_completed,
       send_sort_direction,
-      send_sort_term
+      send_sort_term,
+      send_today
     )
   end
 
@@ -253,7 +257,8 @@ defmodule TodoWeb.TaskLive.Index do
         send_priority: nil,
         send_completed: nil,
         send_sort_term: :start_date,
-        send_sort_direction: :asc
+        send_sort_direction: :asc,
+        send_today: nil
       )
 
     tasks = get_tasks(socket)
@@ -267,6 +272,16 @@ defmodule TodoWeb.TaskLive.Index do
     Tasks.update_task(task, %{completed: !task.completed})
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("show_today", %{}, socket) do
+    socket = assign(socket, send_today: Timex.now())
+    IO.inspect(socket, label: "show today")
+    tasks = get_tasks(socket)
+
+
+    {:noreply, assign(socket, :tasks, tasks)}
   end
 
   defp list_completed_options do

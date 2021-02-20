@@ -121,7 +121,7 @@ defmodule Todo.Tasks do
   end
 
   def format_dates(task) do
-    format_string = "%A %d %B %Y %k:%M %z"
+    format_string = "%a %d %b %Y %k:%M"
     start_date = task.start_date |> Timex.format!(format_string, :strftime)
     due_date = task.due_date |> Timex.format!(format_string, :strftime)
     %{task | start_date: start_date, due_date: due_date}

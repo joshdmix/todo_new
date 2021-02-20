@@ -22,7 +22,7 @@ defmodule TodoWeb.Router do
 
     live "/tasks/:id", TaskLive.Show, :show
     live "/tasks/:id/show/edit", TaskLive.Show, :edit
-    live "/", PageLive, :index
+    live "/", TaskLive.Index, :index
   end
 
   # Other scopes may use custom stacks.

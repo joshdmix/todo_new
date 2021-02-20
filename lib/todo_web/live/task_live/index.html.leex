@@ -70,9 +70,9 @@
       <% end %>
     </tr>
   </thead>
-  <tbody class="bg-green-100 uppercase text-sm" id="tasks">
+  <tbody class="uppercase text-sm bg-green-100 text-green-900" id="tasks">
     <%= for task <- @tasks do %>
-      <tr class="m-1.5 rounded-l-3xl text-green-900" id="task-<%= task.id %>" >
+      <tr class="m-1.5" id="task-<%= task.id %>" >
         <td class="px-2 py-4 uppercase text-center"><%= task.title %></td>
         <td class="overflow-hidden px-2 py-4 text-center"><%= task.description %></td>
         <td class="px-2 py-4 text-center"><%= task.start_date %></td>

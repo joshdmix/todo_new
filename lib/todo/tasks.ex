@@ -67,8 +67,9 @@ defmodule Todo.Tasks do
   end
 
   def get_todays_tasks(today) do
-    todays_date = today |> DateTime.to_date
-    dynamic([t], t.start_date == ^todays_date)
+    IO.inspect(today, label: "GET TODAYS DATES")
+    today_date_only = DateTime.to_date(today)
+    dynamic([t], fragment("?::date", t.start_date) == ^today_date_only)
   end
 
   def get_completed_tasks(nil) do
@@ -137,6 +138,49 @@ defmodule Todo.Tasks do
     Timex.now() |> Timex.format!(format_string, :strftime)
   end
 
+  @spec format_dates(%{
+          :due_date =>
+            {{integer, pos_integer, pos_integer},
+             {non_neg_integer, non_neg_integer, non_neg_integer}
+             | {non_neg_integer, non_neg_integer, non_neg_integer, non_neg_integer | {any, any}}}
+            | {integer, pos_integer, pos_integer}
+            | %{
+                :__struct__ => Date | DateTime | NaiveDateTime | Time,
+                :calendar => atom,
+                optional(:day) => pos_integer,
+                optional(:hour) => non_neg_integer,
+                optional(:microsecond) => {non_neg_integer, non_neg_integer},
+                optional(:minute) => non_neg_integer,
+                optional(:month) => pos_integer,
+                optional(:second) => non_neg_integer,
+                optional(:std_offset) => integer,
+                optional(:time_zone) => binary,
+                optional(:utc_offset) => integer,
+                optional(:year) => integer,
+                optional(:zone_abbr) => binary
+              },
+          :start_date =>
+            {{integer, pos_integer, pos_integer},
+             {non_neg_integer, non_neg_integer, non_neg_integer}
+             | {non_neg_integer, non_neg_integer, non_neg_integer, non_neg_integer | {any, any}}}
+            | {integer, pos_integer, pos_integer}
+            | %{
+                :__struct__ => Date | DateTime | NaiveDateTime | Time,
+                :calendar => atom,
+                optional(:day) => pos_integer,
+                optional(:hour) => non_neg_integer,
+                optional(:microsecond) => {non_neg_integer, non_neg_integer},
+                optional(:minute) => non_neg_integer,
+                optional(:month) => pos_integer,
+                optional(:second) => non_neg_integer,
+                optional(:std_offset) => integer,
+                optional(:time_zone) => binary,
+                optional(:utc_offset) => integer,
+                optional(:year) => integer,
+                optional(:zone_abbr) => binary
+              },
+          optional(any) => any
+        }) :: %{:due_date => binary, :start_date => binary, optional(any) => any}
   def format_dates(task) do
     format_string = "%a %d %b %Y %k:%M"
     start_date = task.start_date |> Timex.format!(format_string, :strftime)

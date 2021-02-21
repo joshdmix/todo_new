@@ -280,6 +280,13 @@ defmodule TodoWeb.TaskLive.Index do
     IO.inspect(socket, label: "show today")
     tasks = get_tasks(socket)
 
+    {:noreply, assign(socket, :tasks, tasks)}
+  end
+
+  @impl true
+  def handle_event("cancel_today", %{}, socket) do
+    socket = assign(socket, send_today: nil)
+    tasks = get_tasks(socket)
 
     {:noreply, assign(socket, :tasks, tasks)}
   end

@@ -49,7 +49,8 @@ defmodule Todo.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:timex, "~> 3.6"},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},
-      {:calendar, "~> 1.0"}
+      {:calendar, "~> 1.0"},
+      {:paginator, "~> 1.0.3"}
     ]
   end
 

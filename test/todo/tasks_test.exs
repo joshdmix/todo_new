@@ -84,7 +84,6 @@ defmodule Todo.TasksTest do
       Tasks.delete_task(task)
 
       assert_raise(Ecto.NoResultsError, fn -> Tasks.get_task!(id) end)
-
     end
 
     test "format_dates/1 correctly formats dates" do
@@ -147,7 +146,6 @@ defmodule Todo.TasksTest do
       assert task.start_date |> Timex.shift(months: 1) == task2.start_date
       assert task.due_date |> Timex.shift(months: 1) == task2.due_date
     end
-
 
     test "invalid attrs fail changeset" do
       assert_raise Ecto.InvalidChangesetError, fn ->

@@ -38,7 +38,15 @@ defmodule Todo.Tasks do
     Task.changeset(task, attrs)
   end
 
-  def get_tasks(labels, priority, completed, sort_direction, sort_term, today) do
+  def get_tasks(
+        labels,
+        priority,
+        completed,
+        sort_direction,
+        sort_term,
+        today,
+        cursor_after \\ nil
+      ) do
     priority = get_tasks_by_priority(priority)
     labels = get_tasks_by_labels(labels)
     completed = get_completed_tasks(completed)
@@ -54,7 +62,35 @@ defmodule Todo.Tasks do
         order_by: ^sort_tasks
 
     IO.inspect(query, label: "query!!!!!")
-    Repo.all(query) |> format_tasks()
+
+    if cursor_after do
+      %{metadata: metadata, entries: entries} =
+        Repo.paginate(query,
+          after: cursor_after,
+          cursor_fields: [{:inserted_at, :asc}, {:id, :asc}],
+          limit: 100
+        )
+
+      %{entries: entries |> format_tasks(), metadata: metadata}
+    else
+      %{metadata: metadata, entries: entries} =
+        Repo.paginate(query, cursor_fields: [:inserted_at, :id], limit: 100)
+
+      %{entries: entries |> format_tasks(), metadata: metadata}
+    end
+
+    # assign the `after` cursor to a variable
+    # cursor_after = metadata.after
+    # return the next 50 posts
+    # assign the `before` cursor to a variable
+    # cursor_before = metadata.before
+    # return the previous 50 posts (if no post was created in between it should be the same list as in our first call to `paginate`)
+    # %{entries: entries, metadata: metadata} = Repo.paginate(query, before: cursor_before, cursor_fields: [:inserted_at, :id], limit: 50)
+    # return total count
+    # NOTE: this will issue a separate `SELECT COUNT(*) FROM table` query to the database.
+    # %{entries: entries, metadata: metadata} = Repo.paginate(query, include_total_count: true, cursor_fields: [:inserted_at, :id], limit: 50)
+
+    # Repo.all(query) |> format_tasks()
   end
 
   def sort_tasks(sort_direction \\ :asc, sort_term \\ :start_date) do
@@ -62,7 +98,7 @@ defmodule Todo.Tasks do
   end
 
   def get_todays_tasks(nil) do
-    future = Timex.now |> Timex.shift(years: 1000)
+    future = Timex.now() |> Timex.shift(years: 1000)
     dynamic([t], t.start_date < ^future)
   end
 

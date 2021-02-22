@@ -16,15 +16,12 @@ defmodule Todo.Application do
       # Start the Endpoint (http/https)
       TodoWeb.Endpoint,
       # Start a worker by calling: Todo.Worker.start_link(arg)
-      Boundary.List
-
-      Boundary.Registry.child_spec()
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Todo.Supervisor]
-    Supervisor.start_link(children, opts, strategy: :one_for_all)
+    Supervisor.start_link(children, opts)
   end
 
   # Tell Phoenix to update the endpoint configuration

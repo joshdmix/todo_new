@@ -14,6 +14,7 @@ defmodule Todo.Tasks.Task do
     field :priority, :string
     field :start_date, :utc_datetime
     field :title, :string
+    belongs_to :list, Todo.Lists.List
 
     timestamps()
   end
@@ -31,8 +32,9 @@ defmodule Todo.Tasks.Task do
       :completed_date,
       :interval_type,
       :interval_quantity,
-      :labels
+      :labels,
+      :list_id
     ])
-    |> validate_required([:title, :description, :start_date, :due_date, :labels, :priority])
+    |> validate_required([:title, :description, :start_date, :due_date, :priority])
   end
 end

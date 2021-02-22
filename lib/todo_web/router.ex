@@ -22,6 +22,14 @@ defmodule TodoWeb.Router do
 
     live "/tasks/:id", TaskLive.Show, :show
     live "/tasks/:id/show/edit", TaskLive.Show, :edit
+
+    live "/lists", ListLive.Index, :index
+    live "/lists/new", ListLive.Index, :new
+    live "/lists/:id/edit", ListLive.Index, :edit
+
+    live "/lists/:id", ListLive.Show, :show
+    live "/lists/:id/show/edit", ListLive.Show, :edit
+
     live "/", TaskLive.Index, :index
   end
 

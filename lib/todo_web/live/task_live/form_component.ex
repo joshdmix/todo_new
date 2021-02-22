@@ -1,7 +1,7 @@
 defmodule TodoWeb.TaskLive.FormComponent do
   use TodoWeb, :live_component
 
-  alias Todo.Tasks
+  alias Todo.{Lists, Tasks}
 
   @impl true
   def update(%{task: task} = assigns, socket) do
@@ -10,7 +10,7 @@ defmodule TodoWeb.TaskLive.FormComponent do
     socket =
       assign(socket, [
         {:labels_list, Tasks.list_alphabetical_labels()},
-        {:priorities, Tasks.list_priorities()}
+        {:priorities, Tasks.list_priorities()}, {:lists, list_tuples()}
       ])
 
     {:ok,
@@ -80,5 +80,9 @@ defmodule TodoWeb.TaskLive.FormComponent do
       IO.inspect(label: "call tasks interval copy")
       Tasks.interval_copy(task)
     end
+  end
+
+  defp list_tuples do
+    Lists.list_lists() |> Enum.map(fn %{id: id, title: title} -> %{id: id, title: title} end)
   end
 end

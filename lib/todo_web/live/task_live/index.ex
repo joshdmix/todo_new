@@ -1,6 +1,7 @@
 defmodule TodoWeb.TaskLive.Index do
   use TodoWeb, :live_view
 
+  alias Todo.Lists
   alias Todo.Tasks
   alias Todo.Tasks.Task
 
@@ -23,7 +24,8 @@ defmodule TodoWeb.TaskLive.Index do
         send_priority: nil,
         send_today: nil,
         today: Tasks.get_todays_date(),
-        cursor_after: nil
+        cursor_after: nil,
+        lists: Lists.list_lists
       )
 
     {tasks, cursor_after} = get_tasks(socket)

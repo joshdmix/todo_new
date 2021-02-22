@@ -14,15 +14,17 @@ defmodule Todo.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Todo.PubSub},
       # Start the Endpoint (http/https)
-      TodoWeb.Endpoint
+      TodoWeb.Endpoint,
       # Start a worker by calling: Todo.Worker.start_link(arg)
-      # {Todo.Worker, arg}
+      Boundary.List
+
+      Boundary.Registry.child_spec()
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Todo.Supervisor]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link(children, opts, strategy: :one_for_all)
   end
 
   # Tell Phoenix to update the endpoint configuration

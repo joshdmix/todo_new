@@ -38,6 +38,55 @@ defmodule Todo.Tasks do
     Task.changeset(task, attrs)
   end
 
+  ### queries
+
+  def sort_tasks(sort_direction \\ :asc, sort_term \\ :start_date) do
+    [{sort_direction, sort_term}]
+  end
+
+  def get_todays_tasks(nil) do
+    future = Timex.now() |> Timex.shift(years: 1000)
+    dynamic([t], t.start_date < ^future)
+  end
+
+  def get_todays_tasks(today) do
+    IO.inspect(today, label: "GET TODAYS DATES")
+    today_date_only = DateTime.to_date(today)
+    dynamic([t], fragment("?::date", t.start_date) == ^today_date_only)
+  end
+
+  def get_completed_tasks(nil) do
+    dynamic([t], t.completed == true or t.completed == false)
+  end
+
+  def get_completed_tasks(completed) do
+    IO.inspect(completed, label: "COMPLETED")
+
+    case completed do
+      "Completed" ->
+        dynamic([t], t.completed == true)
+
+      _ ->
+        dynamic([t], t.completed != true)
+    end
+  end
+
+  def get_tasks_by_labels(nil) do
+    dynamic([t], not is_nil(t.labels))
+  end
+
+  def get_tasks_by_labels(label) do
+    dynamic([t], ^label == t.labels)
+  end
+
+  def get_tasks_by_priority(nil) do
+    dynamic([t], not is_nil(t.priority))
+  end
+
+  def get_tasks_by_priority(priority) do
+    dynamic([t], t.priority == ^priority)
+  end
+
   def get_tasks(
         labels,
         priority,
@@ -91,53 +140,6 @@ defmodule Todo.Tasks do
     # %{entries: entries, metadata: metadata} = Repo.paginate(query, include_total_count: true, cursor_fields: [:inserted_at, :id], limit: 50)
 
     # Repo.all(query) |> format_tasks()
-  end
-
-  def sort_tasks(sort_direction \\ :asc, sort_term \\ :start_date) do
-    [{sort_direction, sort_term}]
-  end
-
-  def get_todays_tasks(nil) do
-    future = Timex.now() |> Timex.shift(years: 1000)
-    dynamic([t], t.start_date < ^future)
-  end
-
-  def get_todays_tasks(today) do
-    IO.inspect(today, label: "GET TODAYS DATES")
-    today_date_only = DateTime.to_date(today)
-    dynamic([t], fragment("?::date", t.start_date) == ^today_date_only)
-  end
-
-  def get_completed_tasks(nil) do
-    dynamic([t], t.completed == true or t.completed == false)
-  end
-
-  def get_completed_tasks(completed) do
-    IO.inspect(completed, label: "COMPLETED")
-
-    case completed do
-      "Completed" ->
-        dynamic([t], t.completed == true)
-
-      _ ->
-        dynamic([t], t.completed != true)
-    end
-  end
-
-  def get_tasks_by_labels(nil) do
-    dynamic([t], not is_nil(t.labels))
-  end
-
-  def get_tasks_by_labels(label) do
-    dynamic([t], ^label == t.labels)
-  end
-
-  def get_tasks_by_priority(nil) do
-    dynamic([t], not is_nil(t.priority))
-  end
-
-  def get_tasks_by_priority(priority) do
-    dynamic([t], t.priority == ^priority)
   end
 
   ###############

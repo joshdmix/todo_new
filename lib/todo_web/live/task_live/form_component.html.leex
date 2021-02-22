@@ -23,13 +23,13 @@
 
       <div class="mb-6 container">
         <%= label f, :start_date %>
-        <%= datetime_select f, :start_date %>
+        <%= datetime_select f, :start_date, default: Timex.now()  %>
         <%= error_tag f, :start_date %>
       </div>
 
       <div class="mb-6 container">
         <%= label f, :due_date %>
-        <%= datetime_select f, :due_date %>
+        <%= datetime_select f, :due_date, default: Timex.now() %>
         <%= error_tag f, :due_date %>
       </div>
 

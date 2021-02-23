@@ -7,7 +7,7 @@
     return_to: Routes.task_index_path(@socket, :index) %>
 <% end %>
 
-<div class="text-lg text-green-600 grid-rows-3 gap-20">
+<div class="text-lg text-green-600 grid-rows-4 gap-20">
 <div class="grid grid-cols-3 border-none">
 <%= live_patch "Add New Task", to: Routes.task_index_path(@socket, :new), class: "button bg-green-700 m-3"%>
 <%= if @send_today == nil do %>
@@ -58,6 +58,7 @@
       Priority
       Labels
       Done
+      Repeat
       ] do %>
       <div class="grid grid-rows-2">
           <th class="w-1/12 text-center text-base text-green-600 uppercase border-none-black">
@@ -83,7 +84,8 @@
         <td class="px-2 py-4 text-center"><%= task.due_date %></td>
         <td class="px-2 py-4 text-center"><%= task.priority  %></td>
         <td class="px-2 py-4 text-center"><%= task.labels %></td>
-        <td class="px-2 py-4 text-center"><%= checkbox(:task, :completed, phx_click: "toggle_completed", phx_value_id: task.id,  value: task.completed)%></td>
+        <td class="px-2 py-4 text-center"><%= checkbox(:task, :completed, phx_click: "toggle_completed", phx_value_id: task.id,  value: task.completed, disabled: task.completed)%></td>
+        <td class="px-2 py-4 text-center"><%= task.repeat %></td>
         <td>
           <span class="text-lg text-green-900"><%= live_redirect "Show", to: Routes.task_show_path(@socket, :show, task) %></span>
           </br>

@@ -7,11 +7,13 @@ defmodule Todo.Tasks.Task do
     field :completed_date, :utc_datetime
     field :description, :string
     field :due_date, :utc_datetime
+    field :inactive, :boolean, default: false
     field :interval_quantity, :integer
-
-    field :labels, :string
     field :interval_type, :string
+    field :labels, :string
+    field :parent_id, :integer
     field :priority, :string
+    field :repeat, :boolean, default: false
     field :start_date, :utc_datetime
     field :title, :string
     belongs_to :list, Todo.Lists.List
@@ -30,10 +32,13 @@ defmodule Todo.Tasks.Task do
       :priority,
       :completed,
       :completed_date,
+      :inactive,
       :interval_type,
       :interval_quantity,
       :labels,
-      :list_id
+      :list_id,
+      :parent_id,
+      :repeat
     ])
     |> validate_required([:title, :description, :start_date, :due_date, :priority])
   end

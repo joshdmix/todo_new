@@ -29,10 +29,6 @@ defmodule TodoWeb.TaskLive.Index do
       )
 
     {tasks, cursor_after} = get_tasks(socket)
-    # tasks = get_tasks(socket)
-
-    # IO.inspect(tasks, label: "MOUNT TASKS")
-    IO.inspect(cursor_after, label: "CURSOR AFTER")
 
     {:ok, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
   end
@@ -272,10 +268,11 @@ defmodule TodoWeb.TaskLive.Index do
 
   @impl true
   def handle_event("toggle_completed", %{"id" => id}, socket) do
-    task = Tasks.get_task!(id)
-    Tasks.update_task(task, %{completed: !task.completed})
+    Tasks.toggle_completed(id)
 
-    {:noreply, socket}
+    {tasks, cursor_after} = get_tasks(socket)
+
+    {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
   end
 
   @impl true

@@ -47,11 +47,10 @@
       </div>
 
       <div class="mb-6 container">
-        <%= label f, :completed %>
-        <%= checkbox f, :completed %>
-        <%= error_tag f, :completed %>
+        <%= label f, :repeat %>
+        <%= checkbox f, :repeat, prompt: "Repeat" %>
+        <%= error_tag f, :repeat %>
       </div>
-
 
       <div class="grid grid-cols-4 container" phx_change="interval">
         <%= label f, "Repeat task every" %>
@@ -65,9 +64,6 @@
   </div>
 </div>
 
-  <!-- <%= label f, :completed_date %> -->
-  <!-- <%= datetime_select f, :completed_date %> -->
-  <!-- <%= error_tag f, :completed_date %> -->
 
 
   <%= submit "Save", phx_disable_with: "Saving..." %>

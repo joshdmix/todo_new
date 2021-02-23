@@ -5,7 +5,9 @@ defmodule Todo.Tasks do
 
   import Ecto.Query, warn: false
   alias Todo.Repo
+
   alias Todo.Labels
+
   alias Todo.Tasks.{Label, Task}
 
   def list_tasks do
@@ -24,6 +26,9 @@ defmodule Todo.Tasks do
   end
 
   def update_task(%Task{} = task, attrs) do
+
+    IO.inspect(task, label: "HERE")
+    IO.inspect(attrs, label: "HERE")
     task
     |> Task.changeset(attrs)
     |> Repo.update()
@@ -33,12 +38,28 @@ defmodule Todo.Tasks do
     task = get_task!(task_id)
     {:ok, updated_task} = update_task(task, %{completed: !task.completed})
 
-    if updated_task.repeat do
+    if updated_task.completed and updated_task.repeat do
       interval_copy(updated_task)
     end
   end
 
-  defp get_shift_by_interval_type(task) do
+  # defp interval_copies?(task) do
+  #   if task.interval_quantity > 0 and task.interval_type != nil do
+  #     interval_copy(task)
+  #   end
+  # end
+
+  # defp interval_copies?(original_task, attrs) do
+  #   %{interval_quantity: interval_quantity, interval_type: interval_type} = original_task
+
+  #   if attrs.interval_quantity != interval_quantity or attrs.interval_type != interval_type do
+  #     interval_copy(original_task, attrs)
+  #   else
+  #     original_task
+  #   end
+  # end
+
+  def get_shift_by_interval_type(task) do
     case task.interval_type do
       "days" ->
         %{
@@ -103,25 +124,25 @@ defmodule Todo.Tasks do
 
   ### queries
 
-  defp sort_tasks(sort_direction \\ :asc, sort_term \\ :start_date) do
+  def sort_tasks(sort_direction \\ :asc, sort_term \\ :start_date) do
     [{sort_direction, sort_term}]
   end
 
-  defp get_todays_tasks(nil) do
+  def get_todays_tasks(nil) do
     future = Timex.now() |> Timex.shift(years: 1000)
     dynamic([t], t.start_date < ^future)
   end
 
-  defp get_todays_tasks(today) do
+  def get_todays_tasks(today) do
     today_date_only = DateTime.to_date(today)
     dynamic([t], fragment("?::date", t.start_date) == ^today_date_only)
   end
 
-  defp get_completed_tasks(nil) do
+  def get_completed_tasks(nil) do
     dynamic([t], t.completed == true or t.completed == false)
   end
 
-  defp get_completed_tasks(completed) do
+  def get_completed_tasks(completed) do
     case completed do
       "Completed" ->
         dynamic([t], t.completed == true)
@@ -131,19 +152,19 @@ defmodule Todo.Tasks do
     end
   end
 
-  defp get_tasks_by_labels(nil) do
+  def get_tasks_by_labels(nil) do
     dynamic([t], not is_nil(t.labels))
   end
 
-  defp get_tasks_by_labels(label) do
+  def get_tasks_by_labels(label) do
     dynamic([t], ^label == t.labels)
   end
 
-  defp get_tasks_by_priority(nil) do
+  def get_tasks_by_priority(nil) do
     dynamic([t], not is_nil(t.priority))
   end
 
-  defp get_tasks_by_priority(priority) do
+  def get_tasks_by_priority(priority) do
     dynamic([t], t.priority == ^priority)
   end
 
@@ -200,6 +221,23 @@ defmodule Todo.Tasks do
     # Repo.all(query) |> format_tasks()
   end
 
+  ###############
+
+  # def get_shift_list(date, interval, repeat_qty, unit) do
+  #   repeat_list = 1..repeat_qty |> Enum.to_list()
+  #   build_shift_list(repeat_list, [], date, interval, unit)
+  # end
+
+  # defp build_shift_list([], date_list, _date, _interval, _unit) do
+  #   date_list
+  # end
+
+  # defp build_shift_list([_hd | tl], date_list, date, interval, unit) do
+  #   shift = [{unit, interval}]
+  #   shifted_date = date |> Timex.shift(shift)
+  #   build_shift_list(tl, [shifted_date | date_list], shifted_date, interval, unit)
+  # end
+
   def list_alphabetical_labels do
     Label |> Labels.alphabetical() |> Repo.all() |> Enum.map(& &1.name)
   end
@@ -227,14 +265,25 @@ defmodule Todo.Tasks do
   def insert_copy(status, task, parent_id) do
     case status do
       :inactive ->
-        %{task | inactive: true, parent_id: parent_id, completed: false, completed_date: nil}
-        |> Map.from_struct()
-        |> create_task!
+        %{task | inactive: true, parent_id: parent_id} |> Map.from_struct() |> create_task!
 
       :active ->
-        %{task | inactive: false, parent_id: parent_id, completed: false, completed_date: nil}
-        |> Map.from_struct()
-        |> create_task!
+        %{task | inactive: false, parent_id: parent_id} |> Map.from_struct() |> create_task!
     end
   end
 end
+
+#
+# def create_tasks_on_interval(task, interval, repeat_qty, unit \\ :weeks) do
+#   shifted_dates
+
+# end
+
+# def shift_dates(start_date, due_date, interval, repeat_qty) do
+#   start_dates
+# end
+
+# def get_tasks_by_label(label) do
+#   Repo.all(from t in Task, where: ^label in t.labels) |> format_tasks()
+# end
+#

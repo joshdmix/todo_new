@@ -1,8 +1,10 @@
 defmodule Todo.TasksTest do
-  alias Todo.{Repo, Tasks}
+  alias Todo.Tasks
+  alias Todo.Repo
   alias Todo.Tasks.Task
   import Ecto.Query
   use ExUnit.Case
+
   use Todo.RepoCase
 
   describe "tasks" do
@@ -92,81 +94,16 @@ defmodule Todo.TasksTest do
       Enum.each(params_list, &task_fixture(&1))
     end
 
-    def task_fixtures_get_tasks do
-      label_fixtures()
-      priority_fixtures()
-      completed_fixtures()
-    end
-
-    def combo_fixtures do
-      task = task_fixture(@valid_attrs)
-      start_date = fn -> Timex.now() |> Timex.shift(days: Enum.random(1..10)) end
-
-      Enum.each(
-        [
-          Map.merge(task, %{
-            priority: "High",
-            labels: "database",
-            completed: false,
-            start_date: start_date.()
-          }),
-          Map.merge(task, %{
-            priority: "Low",
-            labels: "database",
-            completed: false,
-            start_date: start_date.()
-          }),
-          Map.merge(task, %{
-            priority: "Medium",
-            labels: "UI",
-            completed: false,
-            start_date: start_date.()
-          }),
-          Map.merge(task, %{
-            priority: "Low",
-            labels: "logic",
-            completed: true,
-            start_date: start_date.()
-          }),
-          Map.merge(task, %{
-            priority: "High",
-            labels: "queries",
-            completed: true,
-            start_date: start_date.()
-          })
-        ],
-        fn change -> change |> Map.from_struct() |> Tasks.create_task!() end
-      )
-
-      Tasks.delete_task(task)
-    end
-
     def label_fixtures do
       task = task_fixture(@valid_attrs)
-      Enum.each(["UI", "database", "queries", "logic"], &update_and_insert(:labels, &1, task))
+      Enum.each(Tasks.list_alphabetical_labels(), &update_and_insert(&1, task))
     end
 
-    def priority_fixtures do
-      task = task_fixture(@valid_attrs)
-      Enum.each(["High", "Medium", "Low"], &update_and_insert(:priorities, &1, task))
+    def update_and_insert(label, task) do
+      %{ task | labels: label} |> Tasks.create!()
+
     end
 
-    def completed_fixtures do
-      task = task_fixture(@valid_attrs)
-      Enum.each([true, false], &update_and_insert(:completed, &1, task))
-    end
-
-    def update_and_insert(:labels, value, task) do
-      %{task | labels: value} |> Map.from_struct() |> Tasks.create_task!()
-    end
-
-    def update_and_insert(:priorities, value, task) do
-      %{task | priority: value} |> Map.from_struct() |> Tasks.create_task!()
-    end
-
-    def update_and_insert(:completed, value, task) do
-      %{task | completed: value} |> Map.from_struct() |> Tasks.create_task!()
-    end
 
     test "get_task!/1 gets task" do
       task = %Todo.Tasks.Task{id: id} = task_fixture()
@@ -189,8 +126,7 @@ defmodule Todo.TasksTest do
       assert task.start_date |> Timex.format!("%a %d %b %Y %k:%M", :strftime) ==
                task2.start_date
 
-      assert task.due_date |> Timex.format!("%a %d %b %Y %k:%M", :strftime) ==
-               task2.due_date
+      assert task.due_date |> Timex.format!("%a %d %b %Y %k:%M", :strftime) == task2.due_date
     end
 
     test "list_tasks/0 returns all tasks" do
@@ -207,6 +143,30 @@ defmodule Todo.TasksTest do
 
       assert priorities_from_db_tasks == priorities_from_tasks
     end
+
+    # test "day_copy copies task with updated start and due dates" do
+    #   task = task_fixture()
+    #   task2 = Tasks.day_copy(task)
+
+    #   assert task.description == task2.description
+    #   assert task.labels == task2.labels
+    #   assert task.completed == task2.completed
+    #   assert task.title == task2.title
+    #   assert task.start_date |> Timex.shift(days: 1) == task2.start_date
+    #   assert task.due_date |> Timex.shift(days: 1) == task2.due_date
+    # end
+
+    # test "week_copy copies task with updated start and due dates" do
+    #   task = task_fixture()
+    #   task2 = Tasks.week_copy(task)
+
+    #   assert task.description == task2.description
+    #   assert task.labels == task2.labels
+    #   assert task.completed == task2.completed
+    #   assert task.title == task2.title
+    #   assert task.start_date |> Timex.shift(weeks: 1) == task2.start_date
+    #   assert task.due_date |> Timex.shift(weeks: 1) == task2.due_date
+    # end
 
     test "toggle_completed creates new task if repeat is true - day" do
       task = task_fixture(@repeat_attrs)
@@ -271,106 +231,9 @@ defmodule Todo.TasksTest do
     end
 
     test "get_tasks - labels" do
-      task_fixtures_get_tasks()
-      ui = Tasks.get_tasks("UI", nil, nil, :asc, :start_date, nil, nil)
-      assert length(ui.entries) == 1
-      database = Tasks.get_tasks("database", nil, nil, :asc, :start_date, nil, nil)
-      assert length(database.entries) == 1
-      queries = Tasks.get_tasks("queries", nil, nil, :asc, :start_date, nil, nil)
-      assert length(queries.entries) == 1
-      logic = Tasks.get_tasks("logic", nil, nil, :asc, :start_date, nil, nil)
-      assert length(logic.entries) == 1
-      default = Tasks.get_tasks(nil, nil, nil, :asc, :start_date, nil, nil)
-      assert length(default.entries) == 12
+      fixtures = label_fixtures()
+      IO.inspect(Repo.all(Task))
+
     end
-
-    test "get_tasks - completed" do
-      task_fixtures_get_tasks()
-      false_ = Tasks.get_tasks(nil, nil, false, :asc, :start_date, nil, nil)
-      assert length(false_.entries) == 11
-      true_ = Tasks.get_tasks(nil, nil, "Completed", :asc, :start_date, nil, nil)
-      assert length(true_.entries) == 1
-      default = Tasks.get_tasks(nil, nil, nil, :asc, :start_date, nil, nil)
-      assert length(default.entries) == 12
-    end
-
-    test "get_tasks - priority" do
-      task_fixtures_get_tasks()
-      high = Tasks.get_tasks(nil, "High", nil, :asc, :start_date, nil, nil)
-      assert length(high.entries) == 10
-      medium = Tasks.get_tasks(nil, "Medium", nil, :asc, :start_date, nil, nil)
-      assert length(medium.entries) == 1
-      low = Tasks.get_tasks(nil, "Low", nil, :asc, :start_date, nil, nil)
-      assert length(low.entries) == 1
-    end
-
-    test "get_tasks - combinations" do
-      combo_fixtures()
-
-      database_high_false = Tasks.get_tasks("database", "High", nil, :asc, :start_date, nil, nil)
-      database_low_false = Tasks.get_tasks("database", "Low", nil, :asc, :start_date, nil, nil)
-      ui_medium_false = Tasks.get_tasks("UI", "Medium", nil, :asc, :start_date, nil, nil)
-      logic_low_true = Tasks.get_tasks("logic", "Low", "Completed", :asc, :start_date, nil, nil)
-
-      queries_high_true =
-        Tasks.get_tasks("queries", "High", "Completed", :asc, :start_date, nil, nil)
-
-      completed_only = Tasks.get_tasks(nil, nil, "Completed", :asc, :start_date, nil, nil)
-      priority_only = Tasks.get_tasks(nil, "High", nil, :asc, :start_date, nil, nil)
-      labels_only = Tasks.get_tasks("database", nil, nil, :asc, :start_date, nil, nil)
-
-      Enum.each(
-        [
-          database_high_false,
-          database_low_false,
-          ui_medium_false,
-          logic_low_true,
-          queries_high_true
-        ],
-        fn task_list ->
-          assert length(task_list.entries) == 1
-        end
-      )
-
-      Enum.each(
-        [
-          {database_high_false, "database", "High", false},
-          {database_low_false, "database", "Low", false},
-          {ui_medium_false, "UI", "Medium", false},
-          {logic_low_true, "logic", "Low", true},
-          {queries_high_true, "queries", "High", true}
-        ],
-        fn {task_list, label, priority, completed} ->
-          assert %{labels: ^label, priority: ^priority, completed: ^completed} =
-                   task_list.entries |> List.first()
-        end
-      )
-
-      Enum.each(
-        [
-          completed_only,
-          priority_only,
-          labels_only
-        ],
-        fn task_list ->
-          assert length(task_list.entries) == 2
-        end
-      )
-    end
-
-    # test "get_tasks - sorting" do
-    #   combo_fixtures()
-
-    #   asc_start = %{entries: a_s_tasks} = Tasks.get_tasks(nil, nil, nil, :asc, :start_date, nil, nil)
-    #   desc_start = Tasks.get_tasks(nil, nil, nil, :desc, :start_date, nil, nil)
-    #   asc_completed = Tasks.get_tasks(nil, nil, nil, :asc, :completed, nil, nil)
-    #   desc_completed = Tasks.get_tasks(nil, nil, nil, :desc, :completed, nil, nil)
-    #   asc_priority = Tasks.get_tasks(nil, nil, nil, :asc, :completed, nil, nil)
-    #   desc_priority = Tasks.get_tasks(nil, nil, nil, :desc, :completed, nil, nil)
-
-
-    #   a_s_tasks = Enum.map(a_s_tasks, &Map.from_struct(&1))
-
-    # end
   end
 end

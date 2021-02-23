@@ -57,7 +57,6 @@ defmodule TodoWeb.TaskLive.Index do
   end
 
   defp get_tasks(socket) do
-    IO.inspect(socket.assigns)
     get_tasks2(socket.assigns)
   end
 
@@ -187,8 +186,6 @@ defmodule TodoWeb.TaskLive.Index do
     socket =
       assign(socket, selected_completed: completed_option, send_completed: completed_option)
 
-    IO.inspect(completed_option, label: "COMPLETED OPTION")
-    IO.inspect(socket, label: "Socket")
     {tasks, cursor_after} = get_tasks(socket)
 
     {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}

@@ -28,7 +28,6 @@ defmodule Todo.Tasks do
   end
 
   def update_task(%Task{} = task, attrs) do
-    IO.inspect(task)
     # Store.put(task.start_date || attrs.start_date, Map.merge(task, attrs))
 
     task
@@ -36,6 +35,24 @@ defmodule Todo.Tasks do
     |> Repo.update()
   end
 
+
+  def delete_task(%Task{} = task) do
+    Store.delete(task["start_date"])
+
+    Repo.delete(task)
+  end
+
+  def change_task(%Task{} = task, attrs \\ %{}) do
+    Task.changeset(task, attrs)
+  end
+
+  @doc """
+  Toggle completed state on task. Current interface only allows a one-way toggle
+  (open -> closed) due to complications of interval copying / task recurrence.
+
+  Once a task is marked as completed, the task is checked for the `repeat` field.
+  If `task.repeat` is true, a copy is initiated via `interval_copy/1`.
+  """
   def toggle_completed(task_id) do
     task = get_task!(task_id)
     {:ok, updated_task} = update_task(task, %{completed: !task.completed})
@@ -45,6 +62,10 @@ defmodule Todo.Tasks do
     end
   end
 
+
+
+  # Matches on Task's `interval_type` field to determine Timex.shift argument's key
+  # (:days, :weeks, or :months).
   defp get_shift_by_interval_type(task) do
     case task.interval_type do
       "days" ->
@@ -70,7 +91,9 @@ defmodule Todo.Tasks do
     end
   end
 
-  def interval_copy(
+  # creates copy of task on specified interval
+  # (based on `task.interval_quantity` and `task.interval_type`)
+  defp interval_copy(
         task = %{
           id: parent_id,
           completed: parent_completed
@@ -85,17 +108,7 @@ defmodule Todo.Tasks do
     end
   end
 
-  def delete_task(%Task{} = task) do
-    Store.delete(task["start_date"])
 
-    Repo.delete(task)
-  end
-
-  def change_task(%Task{} = task, attrs \\ %{}) do
-    Task.changeset(task, attrs)
-  end
-
-  ### queries
 
   defp sort_tasks(sort_direction, sort_term) do
     [{sort_direction, sort_term}]
@@ -141,6 +154,12 @@ defmodule Todo.Tasks do
     dynamic([t], t.priority == ^priority)
   end
 
+  @doc """
+  All sorting and filtering of tasks are performed here. Each of the arguments
+  are used to compose a dynamic query to sort and filter the task list. `cursor_after`
+  is used for the pagination library being used, but that is currently a loose end that
+  needs to be resolved.
+  """
   def get_tasks(
         labels,
         priority,
@@ -179,25 +198,19 @@ defmodule Todo.Tasks do
 
       %{entries: entries |> format_tasks(), metadata: metadata}
     end
-
-    # assign the `after` cursor to a variable
-    # cursor_after = metadata.after
-    # return the next 50 posts
-    # assign the `before` cursor to a variable
-    # cursor_before = metadata.before
-    # return the previous 50 posts (if no post was created in between it should be the same list as in our first call to `paginate`)
-    # %{entries: entries, metadata: metadata} = Repo.paginate(query, before: cursor_before, cursor_fields: [:inserted_at, :id], limit: 50)
-    # return total count
-    # NOTE: this will issue a separate `SELECT COUNT(*) FROM table` query to the database.
-    # %{entries: entries, metadata: metadata} = Repo.paginate(query, include_total_count: true, cursor_fields: [:inserted_at, :id], limit: 50)
-
-    # Repo.all(query) |> format_tasks()
   end
 
+  @doc """
+  Get all Labels in alphabetical list (the Task / Label association is not currently used)
+  """
   def list_alphabetical_labels do
     Label |> Labels.alphabetical() |> Repo.all() |> Enum.map(& &1.name)
   end
 
+  @doc """
+  Get all priorities from current Tasks. This isn't used in the UI anymore, but once
+  the Task / Priorities association is established, this will resemble the above `list_alphabetical_labels/0`.
+  """
   def list_priorities do
     Repo.all(from t in Task, select: t.priority) |> Enum.uniq()
   end
@@ -206,11 +219,17 @@ defmodule Todo.Tasks do
     Enum.map(tasks, &format_dates(&1))
   end
 
+  @doc """
+  Get and format today's date.
+  """
   def get_todays_date() do
     format_string = "%a %B %d %Y"
     Timex.now() |> Timex.format!(format_string, :strftime)
   end
 
+  @doc """
+  Format dates on Task.
+  """
   def format_dates(task) do
     format_string = "%a %d %b %Y %k:%M"
     start_date = task.start_date |> Timex.format!(format_string, :strftime)
@@ -218,7 +237,7 @@ defmodule Todo.Tasks do
     %{task | start_date: start_date, due_date: due_date}
   end
 
-  def insert_copy(status, task, parent_id) do
+  defp insert_copy(status, task, parent_id) do
     case status do
       :inactive ->
         %{task | inactive: true, parent_id: parent_id, completed: false, completed_date: nil}

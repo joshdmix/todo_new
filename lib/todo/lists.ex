@@ -1,6 +1,6 @@
 defmodule Todo.Lists do
   @moduledoc """
-  The Lists context.
+  The Lists context. Not currently used.
   """
 
   import Ecto.Query, warn: false

@@ -11,7 +11,7 @@
 <div class="grid grid-cols-3 border-none">
 <%= live_patch "Add New Task", to: Routes.task_index_path(@socket, :new), class: "button bg-green-700 m-3"%>
 <%= if @send_today == nil do %>
-    <button class="uppercase  hover:bg-green-900 bg-green-700  text-white border-none m-3" phx-click="show_today"><%= @today %></button>
+    <button class="uppercase hover:bg-green-900 bg-green-700  text-white border-none m-3" phx-click="show_today"><%= @today %></button>
     <% else %>
     <button class="uppercase  hover:bg-green-700 bg-green-900  text-white border-none m-3" phx-click="cancel_today"><%= @today %></button>
     <% end %>
@@ -38,15 +38,13 @@
   <div class="grid grid-cols-7 border-none">
     <%= for label <- @labels do %>
         <%= if label != @selected_labels do %>
-           <button class="shadow uppercase  hover:bg-green-700 border-none bg-green-200 m-3" phx-click="select-label" phx-value-label_val=<%= label%>><%= label %></button>
+           <button class="shadow uppercase hover:bg-green-700 border-none bg-green-200 m-3" phx-click="select-label" phx-value-label_val=<%= label%>><%= label %></button>
       <% else %>
            <button class="shadow uppercase  hover:bg-green-300 border-none bg-green-500 m-3" phx-click="deselect-label" phx-value-label_val=<%= label%>><%= label %></button>
         <% end %>
     <% end %>
   </div>
 </div>
-
-
 <table class="table-fixed shadow">
   <thead class="bg-green-200">
     <tr class="rounded-l-3xl">
@@ -58,7 +56,6 @@
       Priority
       Labels
       Done
-      Repeat
       ] do %>
       <div class="grid grid-rows-2">
           <th class="w-1/12 text-center text-base text-green-600 uppercase border-none-black">
@@ -70,7 +67,7 @@
           </th>
           </div>
         <% end %>
-      <%= for header <- ~w[Options] do %>
+      <%= for header <- ~w[Repeat Options] do %>
       <th class="w-1/12 text-center text-base text-green-600 uppercase border-none-black"><%= header %></th>
       <% end %>
     </tr>

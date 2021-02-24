@@ -10,76 +10,76 @@
 <ul class="uppercase text-green-600 :whitespace-normal">
 
   <li>
-  <div class=" text-center shadow rounded-xl">
+  <div class="text-start">
     <strong>Title:</strong>
     <%= @task.title %>
     </div>
   </li>
 
   <li>
-  <div class=" text-center shadow rounded-xl">
+  <div class="text-start">
     <strong>Description:</strong>
     <%= @task.description %>
     </div>
   </li>
 
   <li>
-  <div class=" text-center shadow rounded-xl">
+  <div class="text-start">
     <strong>Start date:</strong>
     <%= @task.start_date %>
     </div>
   </li>
 
   <li>
-  <div class=" text-center shadow rounded-xl">
+  <div class="text-start">
     <strong>Due date:</strong>
     <%= @task.due_date %>
     </div>
   </li>
 
   <li>
-  <div class=" text-center shadow rounded-xl">
+  <div class="text-start">
     <strong>Priority:</strong>
     <%= @task.priority %>
     </div>
   </li>
 
   <li>
-  <div class=" text-center shadow rounded-xl">
+  <div class="text-start">
     <strong>Labels:</strong>
     <%= @task.labels %>
     </div>
   </li>
 
   <li>
-  <div class=" text-center shadow rounded-xl">
+  <div class="text-start">
     <strong>Completed:</strong>
     <%= @task.completed %>
     </div>
   </li>
 
   <li>
-  <div class=" text-center shadow rounded-xl">
+  <div class="text-start">
     <strong>Completed date:</strong>
     <%= @task.completed_date %>
     </div>
   </li>
 
   <li>
-  <div class=" text-center shadow rounded-xl">
+  <div class="text-start">
     <strong>Interval type:</strong>
     <%= @task.interval_type %>
     </div>
   </li>
 
   <li>
-  <div class=" text-center shadow rounded-xl">
+  <div class="text-start">
     <strong>Interval quantity:</strong>
     <%= @task.interval_quantity %>
     </div>
   </li>
-
+  <li class="grid grid-cols-6 mt-10">
+    <span class="mr-5"><%= live_patch "Edit", to: Routes.task_show_path(@socket, :edit, @task), class: "button bg-green-700 w-full" %></span>
+    <span><%= live_redirect "Back", to: Routes.task_index_path(@socket, :index), class: "button bg-green-700 w-full" %></span>
+  </li>
 </ul>
-
-<span><%= live_patch "Edit", to: Routes.task_show_path(@socket, :edit, @task), class: "button bg-green-700" %></span>
-<span><%= live_redirect "Back", to: Routes.task_index_path(@socket, :index), class: "button bg-green-700" %></span>

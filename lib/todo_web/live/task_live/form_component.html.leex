@@ -4,67 +4,59 @@
   phx_change: "validate",
   phx_submit: "save" %>
 
-<div class="flex items-top min-h-screen bg-white dark:bg-gray-900">
-  <div class="container mx-auto">
-    <div class="text-center">
-      <h1 class="my-3 text-sm font-semibold text-gray-700 dark:text-gray-200"><%= @title %></h1>
-    </div>
-    <div class="m-7 uppercase text-green-600">
-      <div class="mb-6 container">
+<div class="flex items-top  bg-white dark:bg-gray-900">
+  <div class="container">
+    <div class="m-1 uppercase text-green-600">
+      <div class="mb-2 container">
         <%= label f, :title %>
         <%= text_input f, :title %>
         <%= error_tag f, :title %>
       </div>
 
-      <div class="mb-6 container">
+      <div class="mb-2 container">
         <%= label f, :description %>
         <%= text_input f, :description %>
         <%= error_tag f, :description %>
       </div>
 
-      <div class="mb-6 container">
-        <%= label f, :start_date %>
-        <%= datetime_select f, :start_date, default: Timex.now()  %>
-        <%= error_tag f, :start_date %>
+      <div class="grid grid-cols-2">
+        <div class="mb-2 container">
+          <%= label f, :start_date %>
+          <%= datetime_select f, :start_date, default: Timex.now()  %>
+          <%= error_tag f, :start_date %>
+        </div>
+
+        <div class="mb-2 container">
+          <%= label f, :due_date %>
+          <%= datetime_select f, :due_date, default: Timex.now(), class: "w-full text-xs" %>
+          <%= error_tag f, :due_date %>
+        </div>
       </div>
 
-      <div class="mb-6 container">
-        <%= label f, :due_date %>
-        <%= datetime_select f, :due_date, default: Timex.now() %>
-        <%= error_tag f, :due_date %>
-      </div>
-
-      <div class="mb-6 container">
-        <%= label f, :labels %>
-        <%= select f, :labels, @labels_list, prompt: "Label" %>
+      <div class="mb-2 container">
+        <%= select f, :labels, @labels_list, prompt: "Label", class: "w-full"%>
         <%= error_tag f, :labels %>
       </div>
 
-      <div class="mb-6 container">
-        <%= label f, :priority %>
-        <%= select f, :priority, @priorities, prompt: "Priority Level" %>
+      <div class="mb-2 container">
+        <%= select f, :priority, @priorities, prompt: "Priority Level", class: "w-full" %>
         <%= error_tag f, :priority %>
       </div>
 
-      <div class="mb-6 container">
-        <%= label f, :repeat %>
+        <div class=" grid grid-cols-5 items-center container">
+        <%= label f, "Repeat?"%>
         <%= checkbox f, :repeat, prompt: "Repeat" %>
         <%= error_tag f, :repeat %>
-      </div>
 
-      <div class="grid grid-cols-4 container" phx_change="interval">
-        <%= label f, "Repeat task every" %>
-        <%= select f, :interval_quantity, 0..30 |> Enum.to_list  %>
+        <%= label f, "" %>
+        <%= select f, :interval_quantity, 0..30 |> Enum.to_list, class: " m-2"  %>
         <%= error_tag f, :interval_quantity %>
 
         <%= select f, :interval_type, ["days", "weeks", "months"] %>
         <%= error_tag f, :interval_type %>
       </div>
     </div>
+  <%= submit "Save", phx_disable_with: "Saving...", class: "bg-green-600 text-white mh-4 w-full p-2 border-none" %>
   </div>
 </div>
-
-
-
-  <%= submit "Save", phx_disable_with: "Saving..." %>
 </form>

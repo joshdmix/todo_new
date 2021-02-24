@@ -4,8 +4,9 @@ defmodule Todo.Tasks do
   """
 
   import Ecto.Query, warn: false
-  alias Todo.Repo
   alias Todo.Labels
+  alias Todo.Repo
+  alias Todo.Store
   alias Todo.Tasks.{Label, Task}
 
   def list_tasks do
@@ -15,15 +16,21 @@ defmodule Todo.Tasks do
   def get_task!(id), do: Repo.get!(Task, id)
 
   def create_task!(attrs \\ %{}) do
+    Store.put(attrs["start_date"], attrs)
+
     task =
       %Task{}
       |> Task.changeset(attrs)
       |> Repo.insert!()
 
+
     {:ok, task}
   end
 
   def update_task(%Task{} = task, attrs) do
+    IO.inspect(task)
+    # Store.put(task.start_date || attrs.start_date, Map.merge(task, attrs))
+
     task
     |> Task.changeset(attrs)
     |> Repo.update()
@@ -78,22 +85,9 @@ defmodule Todo.Tasks do
     end
   end
 
-  # def interval_copy(
-  #       _original_task = %{
-  #         id: parent_id,
-  #         completed: parent_completed
-  #       }, attrs
-  #     ) do
-  #   new_task = get_shift_by_interval_type(attrs)
-
-  #   if parent_completed do
-  #     insert_copy(:active, new_task, parent_id)
-  #   else
-  #     insert_copy(:inactive, new_task, parent_id)
-  #   end
-  # end
-
   def delete_task(%Task{} = task) do
+    Store.delete(task["start_date"])
+
     Repo.delete(task)
   end
 
@@ -103,7 +97,7 @@ defmodule Todo.Tasks do
 
   ### queries
 
-  defp sort_tasks(sort_direction \\ :asc, sort_term \\ :start_date) do
+  defp sort_tasks(sort_direction, sort_term) do
     [{sort_direction, sort_term}]
   end
 

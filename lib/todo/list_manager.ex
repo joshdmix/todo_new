@@ -1,4 +1,9 @@
 defmodule Todo.ListManager do
+  @moduledoc """
+  Multiple "Lists" (and the concept of List itself) is not currently implemented,
+  but this would act as a manager for the various List processes (user creates new list,
+  a new ListSession is added as a child to ListManager)
+  """
   use GenServer
 
   def init(lists) when is_map(lists) do

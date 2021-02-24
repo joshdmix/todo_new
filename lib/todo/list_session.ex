@@ -1,4 +1,10 @@
 defmodule ListSession do
+  @moduledoc """
+  Multiple "Lists" (and the concept of List itself) are not currently implemented,
+  but this is the definition of a single List session that would be used once that concept
+  is implemented. This is a child of ListManager (user creates new list, a new ListSession
+  is added as a child to ListManager).
+  """
   def child_spec({list, id}) do
     %{
       id: {__MODULE__, {list.title, id}},

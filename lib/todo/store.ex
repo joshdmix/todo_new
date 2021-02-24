@@ -1,4 +1,12 @@
 defmodule Todo.Store do
+  @moduledoc """
+  Currently this is the main caching module.
+  Nothing is being done with the data at this point,
+  but will be populated by database at application start,
+  and updated on Task addition / update / deletion. If
+  database connection is lost, the cache will continue to
+  keep state and will update database when connection is restored.
+  """
   use GenServer
 
   def start_link(default \\ []) do

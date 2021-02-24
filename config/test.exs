@@ -8,7 +8,7 @@ use Mix.Config
 config :todo, Todo.Repo,
   username: "postgres",
   password: "postgres",
-  database: "todo_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: "todo_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 

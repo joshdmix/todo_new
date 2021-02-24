@@ -4,10 +4,10 @@ defmodule Todo.Tasks do
   """
 
   import Ecto.Query, warn: false
-  alias Todo.Labels
+  alias Todo.{Labels, Priorities}
   alias Todo.Repo
   alias Todo.Store
-  alias Todo.Tasks.{Label, Task}
+  alias Todo.Tasks.{Label, Priority, Task}
 
   def list_tasks do
     Repo.all(Task)
@@ -16,29 +16,27 @@ defmodule Todo.Tasks do
   def get_task!(id), do: Repo.get!(Task, id)
 
   def create_task!(attrs \\ %{}) do
-    Store.put(attrs["start_date"], attrs)
+    Store.put(attrs.start_date, attrs)
 
     task =
       %Task{}
       |> Task.changeset(attrs)
       |> Repo.insert!()
 
-
     {:ok, task}
   end
 
   def update_task(%Task{} = task, attrs) do
-    # Store.put(task.start_date || attrs.start_date, Map.merge(task, attrs))
+    new_task = Map.merge(task, attrs)
+    Store.put(new_task.start_date, new_task)
 
     task
     |> Task.changeset(attrs)
     |> Repo.update()
   end
 
-
   def delete_task(%Task{} = task) do
-    Store.delete(task["start_date"])
-
+    Store.delete(task.start_date)
     Repo.delete(task)
   end
 
@@ -61,8 +59,6 @@ defmodule Todo.Tasks do
       interval_copy(updated_task)
     end
   end
-
-
 
   # Matches on Task's `interval_type` field to determine Timex.shift argument's key
   # (:days, :weeks, or :months).
@@ -94,11 +90,11 @@ defmodule Todo.Tasks do
   # creates copy of task on specified interval
   # (based on `task.interval_quantity` and `task.interval_type`)
   defp interval_copy(
-        task = %{
-          id: parent_id,
-          completed: parent_completed
-        }
-      ) do
+         task = %{
+           id: parent_id,
+           completed: parent_completed
+         }
+       ) do
     new_task = get_shift_by_interval_type(task)
 
     if parent_completed do
@@ -107,8 +103,6 @@ defmodule Todo.Tasks do
       insert_copy(:inactive, new_task, parent_id)
     end
   end
-
-
 
   defp sort_tasks(sort_direction, sort_term) do
     [{sort_direction, sort_term}]
@@ -208,12 +202,15 @@ defmodule Todo.Tasks do
   end
 
   @doc """
-  Get all priorities from current Tasks. This isn't used in the UI anymore, but once
-  the Task / Priorities association is established, this will resemble the above `list_alphabetical_labels/0`.
+  Get all Priorities in alphabetical list (the Task / Priority association is not currently used)
   """
-  def list_priorities do
-    Repo.all(from t in Task, select: t.priority) |> Enum.uniq()
+  def list_alphabetical_priorities do
+    Priority |> Priorities.alphabetical() |> Repo.all() |> Enum.map(& &1.name)
   end
+
+  # def list_priorities do
+  #   Repo.all(from t in Task, select: t.priority) |> Enum.uniq()
+  # end
 
   defp format_tasks(tasks) do
     Enum.map(tasks, &format_dates(&1))

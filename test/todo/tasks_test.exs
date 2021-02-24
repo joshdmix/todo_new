@@ -36,36 +36,6 @@ defmodule Todo.TasksTest do
       title: "repeat_title",
       updated_at: ~N[2021-02-16 21:05:32]
     }
-    @update_attrs %{
-      completed: false,
-      completed_date: ~U[2021-04-18 21:05:32Z],
-      description: "Xander luctus ligula\nvel mi accumsan convallis.\n",
-      due_date: ~U[2021-04-11 21:05:32Z],
-      labels: "Work",
-      inserted_at: ~N[2021-02-16 21:05:32],
-      interval_quantity: 9,
-      interval_type: "days",
-      repeat: false,
-      priority: "Low",
-      start_date: ~U[2021-03-18 21:05:32Z],
-      title: "44_title",
-      updated_at: ~N[2021-02-16 21:05:32]
-    }
-    @more_valid_attrs %{
-      completed: false,
-      completed_date: ~U[2021-04-18 21:05:32Z],
-      description: "Xander luctus ligula\nvel mi accumsan convallis.\n",
-      due_date: ~U[2021-04-11 21:05:32Z],
-      labels: "Work",
-      inserted_at: ~N[2021-02-16 21:05:32],
-      interval_quantity: 9,
-      interval_type: "days",
-      repeat: false,
-      priority: "Medium",
-      start_date: ~U[2021-03-18 21:05:32Z],
-      title: "44_title",
-      updated_at: ~N[2021-02-16 21:05:32]
-    }
     @invalid_attrs %{
       completed: nil,
       completed_date: nil,
@@ -198,14 +168,14 @@ defmodule Todo.TasksTest do
       assert Tasks.list_tasks() == [task]
     end
 
-    test "lists priority options correctly" do
-      task_fixtures([@valid_attrs, @update_attrs, @more_valid_attrs])
-      priorities_from_db_tasks = Tasks.list_priorities() |> Enum.sort()
+    test "`list_alphabetical_priorities/1` lists priority options correctly" do
+      priorities = Tasks.list_alphabetical_priorities()
+      assert priorities == ["High", "Low", "Medium"]
+    end
 
-      priorities_from_tasks =
-        Enum.map([@valid_attrs, @update_attrs, @more_valid_attrs], & &1.priority)
-
-      assert priorities_from_db_tasks == priorities_from_tasks
+    test "`list_alphabetical_labels/1` lists priority options correctly" do
+      labels = Tasks.list_alphabetical_labels()
+      assert labels == ["Database", "List", "Logic", "Processes", "Queries", "State", "UI"]
     end
 
     test "toggle_completed creates new task if repeat is true - day" do
@@ -357,20 +327,5 @@ defmodule Todo.TasksTest do
         end
       )
     end
-
-    # test "get_tasks - sorting" do
-    #   combo_fixtures()
-
-    #   asc_start = %{entries: a_s_tasks} = Tasks.get_tasks(nil, nil, nil, :asc, :start_date, nil, nil)
-    #   desc_start = Tasks.get_tasks(nil, nil, nil, :desc, :start_date, nil, nil)
-    #   asc_completed = Tasks.get_tasks(nil, nil, nil, :asc, :completed, nil, nil)
-    #   desc_completed = Tasks.get_tasks(nil, nil, nil, :desc, :completed, nil, nil)
-    #   asc_priority = Tasks.get_tasks(nil, nil, nil, :asc, :completed, nil, nil)
-    #   desc_priority = Tasks.get_tasks(nil, nil, nil, :desc, :completed, nil, nil)
-
-
-    #   a_s_tasks = Enum.map(a_s_tasks, &Map.from_struct(&1))
-
-    # end
   end
 end

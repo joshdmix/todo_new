@@ -8,67 +8,90 @@ defmodule TaskBuilder do
   end
 
   alias Todo.Tasks.Task
+  alias Todo.{Labels, Priorities}
 
-  def task do
-    task = %Task{}
-
-    task[
-      [
-        completed: false,
-        completed_date: ~U[2021-03-18 21:05:32Z],
-        description: "Suspendisse luctus ligula\nvel mi accumsan convallis.\n",
-        due_date: ~U[2021-03-11 21:05:32Z],
-        inserted_at: ~N[2021-02-16 21:05:32],
-        interval_quantity: 9,
-        interval_type: "days",
-        labels: "Home",
-        priority: "Low",
-        start_date: ~U[2021-02-18 21:05:32Z],
-        title: "42_title",
-        updated_at: ~N[2021-02-16 21:05:32]
-      ]
-    ]
-  end
-
-  def task2 do
-    task = %Todo.Tasks.Task{}
-
-    task[
-      [
-        completed: false,
-        completed_date: ~U[2021-04-18 21:05:32Z],
-        description: "Xander luctus ligula\nvel mi accumsan convallis.\n",
-        due_date: ~U[2021-04-11 21:05:32Z],
-        inserted_at: ~N[2021-02-16 21:05:32],
-        interval_quantity: 9,
-        interval_type: "days",
-        labels: "Work",
-        priority: "High",
-        start_date: ~U[2021-03-18 21:05:32Z],
-        title: "44_title",
-        updated_at: ~N[2021-02-16 21:05:32]
-      ]
-    ]
-  end
-
-  def task3 do
-    %Todo.Tasks.Task{
+    @valid_attrs %{
       completed: false,
       completed_date: ~U[2021-03-18 21:05:32Z],
       description: "Suspendisse luctus ligula\nvel mi accumsan convallis.\n",
       due_date: ~U[2021-03-11 21:05:32Z],
-      inserted_at: ~N[2021-02-16 21:05:32],
-      interval_quantity: 10,
-      interval_type: "days",
       labels: "Medical",
-      priority: "Medium",
-      start_date: ~U[2021-03-03 21:05:32Z],
-      title: "43_title",
+      inserted_at: ~N[2021-02-16 21:05:32],
+      interval_quantity: 9,
+      interval_type: "days",
+      repeat: false,
+      priority: "High",
+      start_date: ~U[2021-02-18 21:05:32Z],
+      title: "42_title",
       updated_at: ~N[2021-02-16 21:05:32]
     }
+    @repeat_attrs %{
+      completed: false,
+      completed_date: ~U[2021-03-18 21:05:32Z],
+      description: "Suspendisse luctus ligula\nvel mi accumsan convallis.\n",
+      due_date: ~U[2021-03-11 21:05:32Z],
+      labels: "Medical",
+      inserted_at: ~N[2021-02-16 21:05:32],
+      interval_quantity: 1,
+      interval_type: "days",
+      repeat: true,
+      priority: "High",
+      start_date: ~U[2021-02-18 21:05:32Z],
+      title: "repeat_title",
+      updated_at: ~N[2021-02-16 21:05:32]
+    }
+    @update_attrs %{
+      completed: false,
+      completed_date: ~U[2021-04-18 21:05:32Z],
+      description: "Xander luctus ligula\nvel mi accumsan convallis.\n",
+      due_date: ~U[2021-04-11 21:05:32Z],
+      labels: "Work",
+      inserted_at: ~N[2021-02-16 21:05:32],
+      interval_quantity: 9,
+      interval_type: "days",
+      repeat: false,
+      priority: "Low",
+      start_date: ~U[2021-03-18 21:05:32Z],
+      title: "44_title",
+      updated_at: ~N[2021-02-16 21:05:32]
+    }
+    @more_valid_attrs %{
+      completed: false,
+      completed_date: ~U[2021-04-18 21:05:32Z],
+      description: "Xander luctus ligula\nvel mi accumsan convallis.\n",
+      due_date: ~U[2021-04-11 21:05:32Z],
+      labels: "Work",
+      inserted_at: ~N[2021-02-16 21:05:32],
+      interval_quantity: 9,
+      interval_type: "days",
+      repeat: false,
+      priority: "Medium",
+      start_date: ~U[2021-03-18 21:05:32Z],
+      title: "44_title",
+      updated_at: ~N[2021-02-16 21:05:32]
+    }
+    @invalid_attrs %{
+      completed: nil,
+      completed_date: nil,
+      description: nil,
+      due_date: nil,
+      id: nil,
+      labels: nil,
+      inserted_at: nil,
+      interval_quantity: nil,
+      interval_type: nil,
+      repeat: false,
+      priority: nil,
+      start_date: nil,
+      title: nil,
+      updated_at: nil
+    }
+  for label <- ~w[Database Logic Queries List UI State Processes] do
+    Labels.create_label!(label)
   end
 
-  def tasks do
-    [task(), task2(), task3()]
+  for priority <- ~w[High Medium Low] do
+    Priorities.create_priority!(priority)
   end
+
 end

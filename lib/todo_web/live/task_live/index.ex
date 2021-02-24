@@ -10,7 +10,7 @@ defmodule TodoWeb.TaskLive.Index do
     socket =
       assign(socket,
         labels: Tasks.list_alphabetical_labels(),
-        priorities: Tasks.list_priorities(),
+        priorities: Tasks.list_alphabetical_priorities(),
         completed_options: list_completed_options(),
         selected_labels: nil,
         sorted_tasks: nil,

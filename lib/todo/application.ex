@@ -1,7 +1,9 @@
 defmodule Todo.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
-  @moduledoc false
+  @moduledoc """
+  `Store` is the main caching process currently. `ListManager`, `ListSession`, `Registry` are in the works.
+  """
   alias Todo.Store
   use Application
 
@@ -16,10 +18,10 @@ defmodule Todo.Application do
       # Start the Endpoint (http/https)
       TodoWeb.Endpoint,
       # Start a worker by calling: Todo.Worker.start_link(arg)
-      {Store, [name: Store]},
-      {Todo.ListManager, [name: Todo.ListManager]},
-      {Registry, [name: Todo.Registry.ListSession, keys: :unique]},
-      {DynamicSupervisor, [name: Todo.Supervisor.QuizSession, strategy: :one_for_one]}
+      {Store, [name: Store]}
+      # {Todo.ListManager, [name: Todo.ListManager]},
+      # {Registry, [name: Todo.Registry.ListSession, keys: :unique]},
+      # {DynamicSupervisor, [name: Todo.Supervisor.ListSession, strategy: :one_for_one]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

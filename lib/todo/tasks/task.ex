@@ -1,4 +1,7 @@
 defmodule Todo.Tasks.Task do
+  @moduledoc """
+  The basic unit of a todo list (List).
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

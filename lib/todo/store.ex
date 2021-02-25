@@ -1,12 +1,9 @@
 defmodule Todo.Store do
   @moduledoc """
   Currently this is the main caching module.
-  Nothing is being done with the data at this point,
-  but will be populated by database at application start,
-  and updated on Task addition / update / deletion. If
-  database connection is lost, the cache will continue to
-  keep state and will update database when connection is restored.
   """
+  alias Todo.Tasks
+  alias Todo.Repo
   use GenServer
 
   def start_link(default \\ []) do
@@ -34,6 +31,8 @@ defmodule Todo.Store do
   end
 
   def init(args) do
+    initial_state_from_database()
+    recurring_database_sync()
     {:ok, Enum.into(args, %{})}
   end
 
@@ -51,5 +50,21 @@ defmodule Todo.Store do
 
   def handle_call({:get_all}, _from, state) do
     {:reply, state, state}
+  end
+
+  ## Helpers
+
+  def initial_state_from_database do
+    Tasks.list_tasks() |> Enum.each(&put(&1.start_date, &1))
+  end
+
+  def recurring_database_sync() do
+    Process.send_after(self(), :sync_database, 10000)
+  end
+
+  def database_sync() do
+    get_all()
+    |> Enum.filter(fn {k, _} -> k != :name end)
+    |> Enum.each(fn {_, v} -> Tasks.insert_or_update_task(v, %{}) end)
   end
 end

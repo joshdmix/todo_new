@@ -10,7 +10,7 @@ defmodule Todo.Tasks do
   alias Todo.Tasks.{Label, Priority, Task}
 
   def list_tasks do
-    Repo.all(Task)
+    Task |> preload(:list) |> Repo.all()
   end
 
   def get_task!(id), do: Repo.get!(Task, id)
@@ -34,6 +34,10 @@ defmodule Todo.Tasks do
     task
     |> Task.changeset(attrs)
     |> Repo.update()
+  end
+
+  def insert_or_update_task(%Task{} = task, attrs) do
+    task |> Task.changeset(attrs) |> Repo.insert_or_update()
   end
 
   def delete_task(%Task{} = task) do

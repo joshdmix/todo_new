@@ -4,7 +4,7 @@ defmodule Todo.Application do
   @moduledoc """
   `Store` is the main caching process currently. `ListManager`, `ListSession`, `Registry` are in the works.
   """
-  alias Todo.Store
+  alias Todo.{Tasks, Store}
   use Application
 
   def start(_type, _args) do
@@ -19,6 +19,8 @@ defmodule Todo.Application do
       TodoWeb.Endpoint,
       # Start a worker by calling: Todo.Worker.start_link(arg)
       {Store, [name: Store]}
+
+
       # {Todo.ListManager, [name: Todo.ListManager]},
       # {Registry, [name: Todo.Registry.ListSession, keys: :unique]},
       # {DynamicSupervisor, [name: Todo.Supervisor.ListSession, strategy: :one_for_one]}

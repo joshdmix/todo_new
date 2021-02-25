@@ -16,7 +16,8 @@ defmodule Todo.Tasks do
   def get_task!(id), do: Repo.get!(Task, id)
 
   def create_task!(attrs \\ %{}) do
-    Store.put(attrs.start_date, attrs)
+
+    Store.put(attrs["start_date"], attrs)
 
     task =
       %Task{}

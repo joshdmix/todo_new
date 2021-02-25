@@ -13,10 +13,10 @@ defmodule Todo.Tasks do
     Repo.all(Task)
   end
 
-  def get_task!(id), do: Repo.get!(Task, id)
+  def get_task!(id), do: Task |> preload(:labels) |> preload(:priorities) |> Repo.get!(id)
 
   def create_task!(attrs \\ %{}) do
-    Store.put(attrs.start_date, attrs)
+    # Store.put(attrs.start_date, attrs)
 
     task =
       %Task{}
@@ -27,8 +27,10 @@ defmodule Todo.Tasks do
   end
 
   def update_task(%Task{} = task, attrs) do
+    IO.inspect(task, label: "update_task/2")
     new_task = Map.merge(task, attrs)
-    Store.put(new_task.start_date, new_task)
+    # Store.put(new_task.start_date, new_task)
+    IO.inspect(new_task, label: "update_task/2")
 
     task
     |> Task.changeset(attrs)
@@ -36,7 +38,7 @@ defmodule Todo.Tasks do
   end
 
   def delete_task(%Task{} = task) do
-    Store.delete(task.start_date)
+    # Store.delete(task.start_date)
     Repo.delete(task)
   end
 
@@ -175,7 +177,9 @@ defmodule Todo.Tasks do
         where: ^labels,
         where: ^completed,
         where: ^todays_tasks,
-        order_by: ^sort_tasks
+        order_by: ^sort_tasks,
+        preload: [:labels],
+        preload: [:priorities]
 
     if cursor_after do
       %{metadata: metadata, entries: entries} =

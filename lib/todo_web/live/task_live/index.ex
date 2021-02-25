@@ -25,7 +25,7 @@ defmodule TodoWeb.TaskLive.Index do
         send_today: nil,
         today: Tasks.get_todays_date(),
         cursor_after: nil,
-        lists: Lists.list_lists
+        lists: Lists.list_lists()
       )
 
     {tasks, cursor_after} = get_tasks(socket)

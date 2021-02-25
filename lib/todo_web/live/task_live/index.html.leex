@@ -36,6 +36,7 @@
         <% end %>
     </div>
   <div class="grid grid-cols-7 border-none">
+    <%= inspect(@labels) %>
     <%= for label <- @labels do %>
         <%= if label != @selected_labels do %>
            <button class="shadow uppercase hover:bg-green-700 border-none bg-green-200 m-3" phx-click="select-label" phx-value-label_val=<%= label%>><%= label %></button>

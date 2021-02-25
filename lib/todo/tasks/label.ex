@@ -10,6 +10,8 @@ defmodule Todo.Tasks.Label do
   schema "labels" do
     field :name, :string
 
+    many_to_many :tasks, Todo.Tasks.Task, join_through: "tasks_labels"
+
     timestamps()
   end
 
@@ -17,6 +19,7 @@ defmodule Todo.Tasks.Label do
   def changeset(label, attrs) do
     label
     |> cast(attrs, [:name])
+    |> cast_assoc(:tasks, with: &Todo.Tasks.Task.changeset/2)
     |> validate_required([:name])
   end
 end

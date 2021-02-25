@@ -5,13 +5,18 @@ defmodule TodoWeb.TaskLive.FormComponent do
 
   @impl true
   def update(%{task: task} = assigns, socket) do
+    IO.inspect(task, label: "formcomponent update task")
     changeset = Tasks.change_task(task)
 
+    IO.inspect(changeset, label: "Form update")
     socket =
       assign(socket, [
         {:labels_list, Tasks.list_alphabetical_labels()},
-        {:priorities, Tasks.list_alphabetical_priorities()}, {:lists, list_tuples()}
-      ])
+        {:priorities, Tasks.list_alphabetical_priorities()},
+        {:lists, list_tuples()}
+          ])
+
+    IO.inspect(socket, label: "socket")
 
     {:ok,
      socket

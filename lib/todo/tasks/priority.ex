@@ -5,6 +5,8 @@ defmodule Todo.Tasks.Priority do
   schema "priorities" do
     field :name, :string
 
+    many_to_many :tasks, Todo.Tasks.Task, join_through: "tasks_priorities"
+
     timestamps()
   end
 
@@ -12,6 +14,7 @@ defmodule Todo.Tasks.Priority do
   def changeset(priority, attrs) do
     priority
     |> cast(attrs, [:name])
+    |> cast_assoc(:tasks, with: &Todo.Tasks.Task.changeset/2)
     |> validate_required([:name])
   end
 end

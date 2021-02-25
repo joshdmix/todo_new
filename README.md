@@ -1,5 +1,5 @@
 # Todo
-This is a to-do list application for a single user. After installing dependencies, seeding db (via `mix ecto.setup`) starting server, go to `localhost:4000`. From here you can add new tasks with various attributes (labels, priority levels) as well as a "Repeat" option. The task will not be repeated until the checkbox in the  "Done" column is checked for that particular task. 
+This is a to-do list application for a single user. After installing dependencies, seeding db (via `mix ecto.setup`) starting server, go to `localhost:4000`. From here you can add new tasks with various attributes (labels, priority levels, etc.) as well as select a "Repeat" option and set an interval for the recurrence. The task will not be repeated in the list until the checkbox in the  "Done" column is checked for that particular task.
 
 Tasks can be filtered on the main list by selecting various filtering buttons and sorted on most columns via the arrows under the column name. 
 

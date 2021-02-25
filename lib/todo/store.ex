@@ -3,8 +3,8 @@ defmodule Todo.Store do
   Currently this is the main caching module.
   """
   alias Todo.Tasks
-  alias Todo.Repo
   use GenServer
+  @genserver_db_sync_interval 30000
 
   def start_link(default \\ []) do
     GenServer.start_link(__MODULE__, default, name: __MODULE__)
@@ -59,12 +59,14 @@ defmodule Todo.Store do
   end
 
   def recurring_database_sync() do
-    Process.send_after(self(), :sync_database, 10000)
+    Process.send_after(self(), :sync_database, @genserver_db_sync_interval)
   end
 
   def database_sync() do
-    get_all()
-    |> Enum.filter(fn {k, _} -> k != :name end)
-    |> Enum.each(fn {_, v} -> Tasks.insert_or_update_task(v, %{}) end)
+    # get_all()
+    GenServer.call(__MODULE__, {:get_all})
+    |> Tasks.filter_genserver_name()
+    |> Enum.map(fn {_, v} -> v end)
+    |> Tasks.insert_all_tasks()
   end
 end

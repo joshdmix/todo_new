@@ -40,6 +40,10 @@ defmodule Todo.Tasks do
     task |> Task.changeset(attrs) |> Repo.insert_or_update()
   end
 
+  def insert_all_tasks(tasks) do
+    Repo.insert_all(Task, tasks, %{})
+  end
+
   def delete_task(%Task{} = task) do
     Store.delete(task.start_date)
     Repo.delete(task)

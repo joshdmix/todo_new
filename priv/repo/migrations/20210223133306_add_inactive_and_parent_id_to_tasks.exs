@@ -6,6 +6,5 @@ defmodule Todo.Repo.Migrations.AddInactiveAndParentIdToTasks do
       add :inactive, :boolean
       add :parent_id, :integer
     end
-
   end
 end

@@ -7,6 +7,5 @@ defmodule Todo.Repo.Migrations.CreateList do
 
       timestamps()
     end
-
   end
 end

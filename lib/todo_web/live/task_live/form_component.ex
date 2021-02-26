@@ -10,7 +10,8 @@ defmodule TodoWeb.TaskLive.FormComponent do
     socket =
       assign(socket, [
         {:labels_list, Tasks.list_alphabetical_labels()},
-        {:priorities, Tasks.list_alphabetical_priorities()}, {:lists, list_tuples()}
+        {:priorities, Tasks.list_alphabetical_priorities()},
+        {:lists, list_tuples()}
       ])
 
     {:ok,

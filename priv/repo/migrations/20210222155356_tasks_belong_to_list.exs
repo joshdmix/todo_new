@@ -5,6 +5,5 @@ defmodule Todo.Repo.Migrations.TasksBelongToList do
     alter table(:tasks) do
       add :list_id, references(:lists)
     end
-
   end
 end

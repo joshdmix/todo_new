@@ -20,7 +20,6 @@ defmodule Todo.Application do
       # Start a worker by calling: Todo.Worker.start_link(arg)
       {Store, [name: Store]}
 
-
       # {Todo.ListManager, [name: Todo.ListManager]},
       # {Registry, [name: Todo.Registry.ListSession, keys: :unique]},
       # {DynamicSupervisor, [name: Todo.Supervisor.ListSession, strategy: :one_for_one]}

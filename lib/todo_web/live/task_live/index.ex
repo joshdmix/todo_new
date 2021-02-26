@@ -24,13 +24,12 @@ defmodule TodoWeb.TaskLive.Index do
         send_priority: nil,
         send_today: nil,
         today: Tasks.get_todays_date(),
-        cursor_after: nil,
-        lists: Lists.list_lists
+        lists: Lists.list_lists()
       )
 
-    {tasks, cursor_after} = get_tasks(socket)
+    tasks = get_tasks(socket)
 
-    {:ok, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
+    {:ok, assign(socket, [{:tasks, tasks}])}
   end
 
   @impl true
@@ -67,22 +66,17 @@ defmodule TodoWeb.TaskLive.Index do
            send_completed: send_completed,
            send_sort_direction: send_sort_direction,
            send_sort_term: send_sort_term,
-           send_today: send_today,
-           cursor_after: cursor_after
+           send_today: send_today
          }
        ) do
-    %{entries: tasks, metadata: metadata} =
-      Tasks.get_tasks(
-        send_labels,
-        send_priority,
-        send_completed,
-        send_sort_direction,
-        send_sort_term,
-        send_today,
-        cursor_after
-      )
-
-    {tasks, metadata.after}
+    Tasks.get_tasks(%{
+      labels: send_labels,
+      priority: send_priority,
+      completed: send_completed,
+      sort_direction: send_sort_direction,
+      sort_term: send_sort_term,
+      today: send_today
+    })
   end
 
   @impl true
@@ -90,9 +84,9 @@ defmodule TodoWeb.TaskLive.Index do
     task = Tasks.get_task!(id)
     {:ok, _} = Tasks.delete_task(task)
 
-    {tasks, cursor_after} = get_tasks(socket)
+    tasks = get_tasks(socket)
 
-    {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
+    {:noreply, assign(socket, [{:tasks, tasks}])}
   end
 
   ### SORTING
@@ -101,12 +95,12 @@ defmodule TodoWeb.TaskLive.Index do
     value =
       case value do
         "Title" -> :title
-        "Description" -> :description
+        "Desc" -> :description
         "Start" -> :start_date
         "Due" -> :due_date
         "Priority" -> :priority
         "Labels" -> :labels
-        "Completed" -> :completed
+        "Done" -> :completed
       end
 
     socket =
@@ -115,9 +109,9 @@ defmodule TodoWeb.TaskLive.Index do
         send_sort_direction: :asc
       )
 
-    {tasks, cursor_after} = get_tasks(socket)
+    tasks = get_tasks(socket)
 
-    {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
+    {:noreply, assign(socket, [{:tasks, tasks}])}
   end
 
   @impl true
@@ -125,12 +119,12 @@ defmodule TodoWeb.TaskLive.Index do
     value =
       case value do
         "Title" -> :title
-        "Description" -> :description
+        "Desc" -> :description
         "Start" -> :start_date
         "Due" -> :due_date
         "Priority" -> :priority
         "Labels" -> :labels
-        "Completed" -> :completed
+        "Done" -> :completed
       end
 
     socket =
@@ -139,9 +133,9 @@ defmodule TodoWeb.TaskLive.Index do
         send_sort_direction: :desc
       )
 
-    {tasks, cursor_after} = get_tasks(socket)
+    tasks = get_tasks(socket)
 
-    {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
+    {:noreply, assign(socket, [{:tasks, tasks}])}
   end
 
   ### SELECT / GET BY...
@@ -159,9 +153,9 @@ defmodule TodoWeb.TaskLive.Index do
         selected_labels: selected_labels
       )
 
-    {tasks, cursor_after} = get_tasks(socket)
+    tasks = get_tasks(socket)
 
-    {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
+    {:noreply, assign(socket, [{:tasks, tasks}])}
   end
 
   @impl true
@@ -172,9 +166,9 @@ defmodule TodoWeb.TaskLive.Index do
         send_priority: priority
       )
 
-    {tasks, cursor_after} = get_tasks(socket)
+    tasks = get_tasks(socket)
 
-    {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
+    {:noreply, assign(socket, [{:tasks, tasks}])}
   end
 
   @impl true
@@ -186,9 +180,9 @@ defmodule TodoWeb.TaskLive.Index do
     socket =
       assign(socket, selected_completed: completed_option, send_completed: completed_option)
 
-    {tasks, cursor_after} = get_tasks(socket)
+    tasks = get_tasks(socket)
 
-    {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
+    {:noreply, assign(socket, [{:tasks, tasks}])}
   end
 
   ### DESELECT
@@ -205,9 +199,9 @@ defmodule TodoWeb.TaskLive.Index do
         selected_priority: nil
       )
 
-    {tasks, cursor_after} = get_tasks(socket)
+    tasks = get_tasks(socket)
 
-    {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
+    {:noreply, assign(socket, [{:tasks, tasks}])}
   end
 
   @impl true
@@ -225,9 +219,9 @@ defmodule TodoWeb.TaskLive.Index do
         selected_labels: nil
       )
 
-    {tasks, cursor_after} = get_tasks(socket)
+    tasks = get_tasks(socket)
 
-    {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
+    {:noreply, assign(socket, [{:tasks, tasks}])}
   end
 
   @impl true
@@ -238,9 +232,9 @@ defmodule TodoWeb.TaskLive.Index do
         selected_completed: nil
       )
 
-    {tasks, cursor_after} = get_tasks(socket)
+    tasks = get_tasks(socket)
 
-    {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
+    {:noreply, assign(socket, [{:tasks, tasks}])}
   end
 
   @impl true
@@ -258,34 +252,34 @@ defmodule TodoWeb.TaskLive.Index do
         send_today: nil
       )
 
-    {tasks, cursor_after} = get_tasks(socket)
+    tasks = get_tasks(socket)
 
-    {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
+    {:noreply, assign(socket, [{:tasks, tasks}])}
   end
 
   @impl true
   def handle_event("toggle_completed", %{"id" => id}, socket) do
     Tasks.toggle_completed(id)
 
-    {tasks, cursor_after} = get_tasks(socket)
+    tasks = get_tasks(socket)
 
-    {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
+    {:noreply, assign(socket, [{:tasks, tasks}])}
   end
 
   @impl true
   def handle_event("show_today", %{}, socket) do
     socket = assign(socket, send_today: Timex.now())
-    {tasks, cursor_after} = get_tasks(socket)
+    tasks = get_tasks(socket)
 
-    {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
+    {:noreply, assign(socket, [{:tasks, tasks}])}
   end
 
   @impl true
   def handle_event("cancel_today", %{}, socket) do
     socket = assign(socket, send_today: nil)
-    {tasks, cursor_after} = get_tasks(socket)
+    tasks = get_tasks(socket)
 
-    {:noreply, assign(socket, [{:tasks, tasks}, {:cursor_after, cursor_after}])}
+    {:noreply, assign(socket, [{:tasks, tasks}])}
   end
 
   defp list_completed_options do

@@ -9,10 +9,10 @@ defmodule Todo.Tasks do
   alias Todo.Store
   alias Todo.Tasks.{Label, Priority, Task}
 
+
   def get_tasks(payload) do
     TaskQueries.get_tasks(payload)
   end
-
   def list_tasks do
     Task |> preload(:list) |> Repo.all()
   end
@@ -20,6 +20,7 @@ defmodule Todo.Tasks do
   def get_task!(id), do: Repo.get!(Task, id)
 
   def create_task!(attrs \\ %{}) do
+
     Store.put(attrs["start_date"], attrs)
 
     task =
@@ -115,6 +116,7 @@ defmodule Todo.Tasks do
       insert_copy(:inactive, new_task, parent_id)
     end
   end
+
 
   @doc """
   Get all Labels in alphabetical list (the Task / Label association is not currently used)

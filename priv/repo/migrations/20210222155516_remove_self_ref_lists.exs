@@ -5,6 +5,5 @@ defmodule Todo.Repo.Migrations.RemoveSelfRefLists do
     alter table(:lists) do
       remove :list_id
     end
-
   end
 end

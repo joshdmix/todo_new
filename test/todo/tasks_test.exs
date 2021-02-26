@@ -163,11 +163,6 @@ defmodule Todo.TasksTest do
                task2.due_date
     end
 
-    test "list_tasks/0 returns all tasks" do
-      task = task_fixture()
-      assert Tasks.list_tasks() == [task]
-    end
-
     test "`list_alphabetical_priorities/1` lists priority options correctly" do
       priorities = Tasks.list_alphabetical_priorities()
       assert priorities == ["High", "Low", "Medium"]

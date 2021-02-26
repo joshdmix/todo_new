@@ -118,8 +118,7 @@ defmodule Todo.Tasks do
   end
 
   defp get_todays_tasks(nil) do
-    future = Timex.now() |> Timex.shift(years: 1000)
-    dynamic([t], t.start_date < ^future)
+    dynamic([t], true)
   end
 
   defp get_todays_tasks(today) do
@@ -128,7 +127,7 @@ defmodule Todo.Tasks do
   end
 
   defp get_completed_tasks(nil) do
-    dynamic([t], t.completed == true or t.completed == false)
+    dynamic([t], true)
   end
 
   defp get_completed_tasks(completed) do
@@ -142,7 +141,7 @@ defmodule Todo.Tasks do
   end
 
   defp get_tasks_by_labels(nil) do
-    dynamic([t], not is_nil(t.labels))
+    dynamic([t], true)
   end
 
   defp get_tasks_by_labels(label) do
@@ -150,7 +149,7 @@ defmodule Todo.Tasks do
   end
 
   defp get_tasks_by_priority(nil) do
-    dynamic([t], not is_nil(t.priority))
+    dynamic([t], true)
   end
 
   defp get_tasks_by_priority(priority) do
